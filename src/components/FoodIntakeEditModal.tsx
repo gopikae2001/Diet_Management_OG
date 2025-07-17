@@ -1,0 +1,99 @@
+import React from 'react';
+import CustomModal from './Modal';
+import Input from './Input';
+import Inputtype from './Inputtype';
+import CancelButton from './CancelButton';
+import ButtonWithGradient from './button';
+
+interface FoodIntakeEditModalProps {
+  isOpen: boolean;
+  onRequestClose: () => void;
+  initialData: any;
+  onSave: (data: any) => void;
+}
+
+const defaultState = {
+  id: '',
+  day: '',
+  date: '',
+  time: '',
+  ampm: 'AM',
+  category: '',
+  fooditem: '',
+  intake_amount: '',
+  unit: '',
+  carbohydrates: '',
+  proteins: '',
+  fat: '',
+  calories: '',
+  end_date: '',
+  comments: '',
+  status: '',
+};
+
+const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
+  const [form, setForm] = React.useState({ ...defaultState, ...initialData });
+
+  React.useEffect(() => {
+    setForm({ ...defaultState, ...initialData });
+  }, [initialData, isOpen]);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setForm((prev: any) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    onSave(form);
+  };
+
+  return (
+    <CustomModal isOpen={isOpen} onRequestClose={onRequestClose} title="Edit Food Intake">
+      <form onSubmit={handleSubmit}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px', marginBottom: 18 }}>
+          <Input label="Date" name="date" value={form.date} onChange={handleChange} type="date" />
+          <Input label="Day" name="day" value={form.day} onChange={handleChange} readOnly />
+          <Inputtype label="Category" name="category" value={form.category} onChange={handleChange} options={[
+            { value: '', label: 'Select category' },
+            { value: 'Breakfast', label: 'Breakfast' },
+            { value: 'Lunch', label: 'Lunch' },
+            { value: 'Dinner', label: 'Dinner' },
+            { value: 'Snack', label: 'Snack' },
+          ]} />
+          <Input label="Food Item" name="fooditem" value={form.fooditem} onChange={handleChange} />
+          <Input label="Time" name="time" value={form.time} onChange={handleChange} type="time" />
+          <Inputtype label="AM/PM" name="ampm" value={form.ampm} onChange={handleChange} options={[
+            { value: 'AM', label: 'AM' },
+            { value: 'PM', label: 'PM' },
+          ]} />
+          <Input label="Intake Amount" name="intake_amount" value={form.intake_amount} onChange={handleChange} type="number" />
+          <Inputtype label="Unit" name="unit" value={form.unit} onChange={handleChange} options={[
+            { value: '', label: 'Select unit' },
+            { value: 'g', label: 'g' },
+            { value: 'ml', label: 'ml' },
+            { value: 'pcs', label: 'pcs' },
+          ]} />
+          <Input label="Carbohydrates (g)" name="carbohydrates" value={form.carbohydrates} onChange={handleChange} type="number" />
+          <Input label="Proteins (g)" name="proteins" value={form.proteins} onChange={handleChange} type="number" />
+          <Input label="Fat (g)" name="fat" value={form.fat} onChange={handleChange} type="number" />
+          <Input label="Calories (kcal)" name="calories" value={form.calories} onChange={handleChange} type="number" />
+          <Input label="End Date" name="end_date" value={form.end_date} onChange={handleChange} type="date" />
+          <Input label="Comments" name="comments" value={form.comments} onChange={handleChange} />
+          <Inputtype label="Status" name="status" value={form.status} onChange={handleChange} options={[
+            { value: '', label: 'Select status' },
+            { value: 'Active', label: 'Active' },
+            { value: 'Paused', label: 'Paused' },
+            { value: 'Stopped', label: 'Stopped' },
+          ]} />
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
+          <CancelButton text="Cancel" onClick={onRequestClose} />
+          <ButtonWithGradient className="primary" type="submit">Save</ButtonWithGradient>
+        </div>
+      </form>
+    </CustomModal>
+  );
+};
+
+export default FoodIntakeEditModal; 

@@ -1,0 +1,62 @@
+/* StatusBadge.css - modular badge styles */
+.status-badge {
+    display: inline-flex;
+    padding: 4px 10px;
+    width: fit-content;
+    max-height: fit-content;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    background-color: #e3f2fd; /* fallback */
+    color: #1976d2; /* fallback */
+    box-shadow: 0 2px 4px rgba(4, 44, 77, 0.2);
+}
+
+/* Pending status - Orange */
+.status-badge.status {
+    background-color: #fff4e6;
+    /* color: #92400e;
+    border: 1px solid #92400e; */
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.status-badge.status-pending{
+    background-color: #fff4e6;
+    color: #92400e;
+    border: 1px solid #92400e;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+/* Approval/Preparing badge - Blue */
+.status-badge.status-preparing {
+    background-color: #e8fcff;
+    color: #19abd8;
+    border: 1px solid #19abd8;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+/* Approved/prepared/delivered status - Green */
+.status-badge.status-diet-order-placed,
+.status-badge.status-delivered,
+.status-badge.status-active {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #2e7d32;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+/* Rejected/stopped status - Red */
+.status-badge.status-rejected,
+.status-badge.status-stopped {
+    background-color: #ffebee;
+    color: #c62828;
+    border: 1px solid #c62828;
+    font-weight: 500;
+    font-size: 0.85rem;
+} 

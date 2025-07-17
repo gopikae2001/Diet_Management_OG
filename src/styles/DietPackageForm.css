@@ -1,0 +1,297 @@
+.dietpackage-container {
+    min-height: 100vh;
+    border-top: 5px solid #0d92ae;
+    background-color: white;
+    padding: 30px;
+    margin: 20px;
+    /* max-width: 1200px; */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* border-radius: 8px; */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  
+  .dietpackage-container .form-section {
+    /* background-color: #0d92ae; */
+    color: white;
+    padding: 10px;
+    border-radius: 6px 6px 0 0;
+    font-weight: 500;
+    margin: 25px 0 15px 0;
+    font-size: 12px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  }
+  
+  /* .section-header2 {
+    background-color: #038ba4;
+    color: white;
+    padding: 0.5rem 1rem;
+    font-weight: bold;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+  } */
+
+
+  .form-container{
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 1.5rem;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+   }
+  
+  .grid-two-cols {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 30px;
+    /* margin: 0px 0; */
+    width: 100%;
+  }
+  .form-row5{
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+  }
+  /* .form-group5{
+    flex: 1;
+    min-width: 0;
+  } */
+  /* .form-group5 input, .form-group5 select{
+    width: 540px;
+  } */
+
+  
+  /* Table Styles */
+  /* table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 20px 0;
+    font-size: 0.9em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  }
+  
+  th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #e0e0e0;
+    vertical-align: top;
+  }
+  
+  th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+    text-transform: uppercase;
+    font-size: 0.8em;
+    letter-spacing: 0.5px;
+  }
+  
+  tr:hover {
+    background-color: #f5f5f5;
+  } */
+  
+  /* Meal Items in Table */
+  .meal-item {
+    padding: 6px 0;
+    border-bottom: 1px dashed #eee;
+    font-size: 0.9em;
+    line-height: 1.4;
+  }
+  
+  .meal-item:last-child {
+    border-bottom: none;
+  }
+  
+  /* Responsive Table */
+  /* @media (max-width: 1200px) {
+    .table-container {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+    
+    table {
+      min-width: 1000px;
+    }
+  } */
+  
+  .meal-card {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+    margin-top: 25px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .meal-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  .meal-card h3 {
+    margin: 0 0 15px 0;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #333;
+    font-size: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .meal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 0;
+    border-bottom: 1px solid #f5f5f5;
+    flex-wrap: nowrap;
+    width: 100%;
+  }
+  
+  .meal-row:last-child {
+    border-bottom: none;
+  }
+  
+  .meal-items {
+    width: 100%;
+    overflow: hidden;
+  }
+  .meal-items-section {
+    width: 100%;
+    margin-top: 20px;
+  }
+  .meal-items-section .meal-type {
+    margin-bottom: 20px;
+    margin-top: 10px;
+  }
+  .meal-items-table {
+    width: 100%;
+  }
+  
+  
+  .meal-row select,
+  .meal-row input {
+    box-sizing: border-box;
+  }
+  
+  .meal-header {
+    margin-bottom: 15px;
+  }
+  
+  .total-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    background-color: #f9f9f9;
+    padding: 16px;
+    border-radius: 8px;
+    gap: 24px;
+    margin-bottom: 20px;
+  }
+  
+  
+  .action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  
+  /* .btn-text {
+    padding: 4px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+  
+  .btn-text.edit {
+    background-color: #e9e9e9;
+    color: #333;
+  }
+  
+  .btn-text.edit:hover {
+    background-color: #d9d9d9;
+  }
+  
+  .btn-text.reject {
+    background-color: #dc2626;
+    color: white;
+  }
+  
+  .btn-text.reject:hover {
+    background-color: #b91c1c;
+  }
+  
+  .btn-text:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  
+  button.add {
+    border: 1px solid #038ba4;
+    color: #038ba4;
+    background: none;
+  }
+  
+  button.primary {
+    background-color: #038ba4;
+    color: white;
+  }
+  
+  button.primary:hover {
+    background-color: #027a94;
+  }
+  
+  button.danger {
+    border: 1px solid red;
+    color: red;
+    background: none;
+  }
+  
+  button.outline {
+    border: 1px solid #ccc;
+    background: none;
+  }
+   */
+  /* .table-container {
+    margin-top: 24px;
+  }
+  
+  .table-container table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .table-container th,
+  .table-container td {
+    padding: 1rem;
+    /* border: 1px solid #ddd; */
+    /* text-align: left; */
+  /* } */
+  
+  /* .dietpackage-table tbody tr:hover{
+    background-color: #f8f9fa;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  .dietpackage-table th, .dietpackage-table td {
+    font-size: 0.95rem;
+  }  */
+
+  /* Section below sub-header */
+  .form-section {
+    background-color: #37a9be;
+    color: white;
+    padding: 0.5rem 1rem;
+    margin: 2rem 0 0 0;
+    border-radius: 4px 4px 0 0;
+    font-weight: 600;
+  }

@@ -1,0 +1,7 @@
+.rejectButton {
+  background-color: #b71c1c; /* dark red */
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+}
