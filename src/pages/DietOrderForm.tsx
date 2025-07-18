@@ -29,6 +29,7 @@ import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { canteenOrdersApi } from '../services/api';
 import type { CanteenOrder } from '../services/api';
+import Avatar from '../components/Avatar';
 
 
 interface DietOrderFormProps {
@@ -76,7 +77,12 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       patientName: state.patientName || "",
       patientId: state.patientId || "",
       contactNumber: state.contactNumber || "", 
-      age: state.age || "",
+      email: state.email || "",
+      address: state.address || "",
+      bloodGroup: state.bloodGroup || "",
+      tokenNo: state.tokenNo || "",
+      visitId: state.visitId || "",
+     age: state.age || "",
       gender: state.gender || "",
       bed: state.bed || "",
       ward: state.ward || "",
@@ -131,6 +137,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
     patientName: string;
     patientId: string;
     contactNumber: string;
+    email: string;
+    address: string;
+    bloodGroup: string;
+    tokenNo: string;
+    visitId: string;
     age: string;
     gender: string;
     bed: string;
@@ -224,6 +235,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       age:"",
       gender: "",
       contactNumber: "", 
+      email: "",
+      address: "",
+      bloodGroup: "",
+      tokenNo: "",
+      visitId: "",
       bed: "",
       ward: "",
       floor: "",
@@ -246,6 +262,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       age: order.age,
       gender: order.gender,
       contactNumber: order.contactNumber || "", 
+      email: order.email || "",
+      address: order.address || "",
+      bloodGroup: order.bloodGroup || "",
+      tokenNo: order.tokenNo || "",
+      visitId: order.visitId || "",
       bed: order.bed,
       ward: order.ward,
       floor: order.floor || "",
@@ -488,89 +509,87 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
             // boxShadow: '0 2px 8px rgba(0,0,0,0.03)'
           }}>
             <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(4, 1fr)',
-              gap: '18px 32px',
+              display: 'flex',
               alignItems: 'center',
-              fontSize: '15px',
-              marginBottom: '0px'
+              gap: '40px',
+              marginBottom: '0px',
             }}>
-              {/* Name */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Name</div>
-                <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>{form.patientName || '-'}</div>
+              {/* Avatar on the left, info grid on the right */}
+              <div style={{ flex: '0 0 auto' }}>
+                <Avatar name={form.patientName || '-'} size={100} />
               </div>
-              {/* Phone Number */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Phone Number</div>
-                <div style={{ fontWeight: 700, color: '#222', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <FaWhatsapp color="#25D366" style={{ fontSize: 18 }} />
-                  {form.contactNumber || '-'}
+              <div style={{ flex: 1 }}>
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(4, 1fr)',
+                  gap: '18px 32px',
+                  alignItems: 'center',
+                  fontSize: '15px',
+                }}>
+                  {/* Name */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Name</div>
+                    <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>{form.patientName || '-'}</div>
+                  </div>
+                  {/* Phone Number */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Phone Number</div>
+                    <div style={{ fontWeight: 700, color: '#222', display: 'flex', alignItems: 'center', gap: 6 }}>
+                      <FaWhatsapp color="#25D366" style={{ fontSize: 18 }} />
+                      {form.contactNumber || '-'}
+                    </div>
+                  </div>
+                  {/* Email */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Email</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.email || '-'}</div>
+                  </div>
+                  {/* Token No */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Token No</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.tokenNo || '-'}</div>
+                  </div>
+                  {/* Age & Gender */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Age & Gender</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.age ? `${form.age} yrs` : '-'}, {form.gender || '-' }</div>
+                  </div>
+                  {/* Patient Type */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Patient Type</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.patientType || location.state?.patientType || '-'}</div>
+                  </div>
+                  {/* Address */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Address</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.address || '-'}</div>
+                  </div>
+                  {/* Blood Group */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Blood Group</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.bloodGroup || '-'}</div>
+                  </div>
+                  {/* Visit ID */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Visit ID</div>
+                    <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>{form.visitId || '-'}</div>
+                  </div>
+                  {/* UHID */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>UHID</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>{form.patientId || '-'}</div>
+                  </div>
+                  {/* ABHA Address */}
+                  {/* <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>ABHA Address</div>
+                    <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>No ABHA Found</div>
+                  </div> */}
+                  {/* Civil IDs */}
+                  <div>
+                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Civil IDs</div>
+                    <div style={{ fontWeight: 700, color: '#222' }}>-</div>
+                  </div>
                 </div>
-              </div>
-              {/* Email */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Email</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-              </div>
-              {/* Token No */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Token No</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-              </div>
-              {/* Age & Gender */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Age & Gender</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>{form.age ? `${form.age} yrs` : '-'}, {form.gender || '-' }</div>
-              </div>
-              {/* Patient Type */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Patient Type</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>{form.patientType || location.state?.patientType || '-'}</div>
-              </div>
-              {/* Address */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Address</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-              </div>
-              {/* Blood Group */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Blood Group</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-              </div>
-              {/* Visit ID */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Visit ID</div>
-                <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>-</div>
-              </div>
-              {/* UHID */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>UHID</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-              </div>
-              {/* Mark as urgent */}
-              {/* <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>OP/IP</div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                  <span style={{
-                    width: 36, height: 20, borderRadius: 12, background: '#e0e0e0', display: 'inline-block', position: 'relative',
-                    verticalAlign: 'middle', marginRight: 4
-                  }}>
-                    <span style={{
-                      width: 16, height: 16, borderRadius: '50%', background: '#fff', position: 'absolute', left: 2, top: 2, boxShadow: '0 1px 3px rgba(0,0,0,0.08)'
-                    }}></span>
-                  </span>
-                </div>
-              </div> */}
-              {/* ABHA Address */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>ABHA Address</div>
-                <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>No ABHA Found</div>
-              </div>
-              {/* Civil IDs */}
-              <div>
-                <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Civil IDs</div>
-                <div style={{ fontWeight: 700, color: '#222' }}>-</div>
               </div>
             </div>
           </div>

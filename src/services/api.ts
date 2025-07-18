@@ -7,6 +7,11 @@ export interface DietOrder {
   patientName: string;
   patientId: string;
   contactNumber: string;
+  email: string;
+  address: string;
+  bloodGroup: string;
+  tokenNo: string;
+  visitId: string;
   age: string;
   gender: string; // Added for patient gender
   bed: string;
@@ -56,13 +61,22 @@ export interface DietRequest {
   patientId: string;
   patientName: string;
   age: string;
+  gender: string;
   contactNumber: string;
+  email: string;
+  address: string;
+  bloodGroup: string;
+  tokenNo: string;
+  visitId: string;
   bed: string;
   ward: string;
   floor: string;
   doctor: string;
   doctorNotes: string;
   status: 'Pending' | 'Diet Order Placed' | 'Rejected';
+  approval: string;
+  patientType: string;
+  date: string;
 }
 
 export interface FoodItem {

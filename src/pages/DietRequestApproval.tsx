@@ -155,9 +155,36 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
     { key: 'floor', header: 'Floor' },
     { key: 'doctor', header: 'Doctor' },
     { key: 'doctorNotes', header: 'Doctor Notes' },
+    {
+      key: 'requestedDate',
+      header: 'Requested Date',
+      render: (_: any, row: any) => {
+        // If row.date is ISO string, extract date part
+        if (row.date) {
+          const datePart = row.date.split('T')[0] || row.date.split(' ')[0] || row.date;
+          return datePart;
+        }
+        return '-';
+      }
+    },
+    {
+      key: 'requestedTime',
+      header: 'Requested Time',
+      render: (_: any, row: any) => {
+        // If row.date is ISO string, extract time part
+        if (row.date) {
+          if (row.date.includes('T')) {
+            return row.date.split('T')[1]?.split('.')[0] || '-';
+          } else if (row.date.includes(' ')) {
+            return row.date.split(' ')[1]?.split('.')[0] || '-';
+          }
+        }
+        return '-';
+      }
+    },
     { key: 'status', header: 'Status',    
       render: (_: any, row: any) => (
-      <span className={`status-badge status-${row.status.toLowerCase().replace(/\s+/g, '-')}`}>
+      <span className={`status-badge status-${row.status.toLowerCase().replace(/\s+/g, '-')}`}> 
         {row.status}
       </span>
     ) },
@@ -199,13 +226,20 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
                     age: row.age,
                     gender: row.gender,
                     contactNumber: row.contactNumber,
+                    address: row.address,
+                    bloodGroup: row.bloodGroup,
+                    tokenNo: row.tokenNo,
+                    visitId: row.visitId,
+                    email: row.email,
                     bed: row.bed,
                     ward: row.ward,
                     floor: row.floor,
                     doctor: row.doctor,
                     doctorNotes: row.doctorNotes,
-                    patientType: row.patientType
+                    patientType: row.patientType,
+                    date: row.date
                   }
+                  
                 });
               }}
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
