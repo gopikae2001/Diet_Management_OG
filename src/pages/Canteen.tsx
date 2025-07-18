@@ -14,6 +14,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import StatusBadge from '../components/StatusBadge';
 import FormDateInput from "../components/Date";
 import FormInputs from "../components/Input";
+import Searchbar from "../components/Searchbar";
 
 
 type Status = "pending" | "active" | "paused" | "stopped" | "preparing" | "delivered";
@@ -34,6 +35,11 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
   const [mealOrders, setMealOrders] = useState<CanteenOrder[]>([]);
   const [dietPackages, setDietPackages] = useState<DietPackage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [fromDate, setFromDate] = useState("");
+  const [toDate, setToDate] = useState("");
+  const [approvalStatus, setApprovalStatus] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   // Load orders and packages from API
   const loadOrders = async () => {
@@ -169,6 +175,47 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
       return acc;
     }, {} as Record<string, { quantity: number; unit: string }>);
 
+  // Filtering logic for table
+  const filteredOrders = mealOrders.filter(order => {
+    const o = order as any;
+    // Date filter
+    let dateMatch = true;
+    if (fromDate) {
+      dateMatch = false;
+      if (o.date) {
+        const itemDate = o.date.split('T')[0] || o.date.split(' ')[0] || o.date;
+        if (itemDate >= fromDate) dateMatch = true;
+      }
+    }
+    if (toDate) {
+      if (o.date) {
+        const itemDate = o.date.split('T')[0] || o.date.split(' ')[0] || o.date;
+        if (itemDate > toDate) dateMatch = false;
+      }
+    }
+    // Approval status filter
+    let approvalMatch = true;
+    if (approvalStatus) {
+      approvalMatch = o.status === approvalStatus;
+    }
+    // Search filter
+    let searchMatch = true;
+    if (searchTerm) {
+      searchMatch = Object.values(o).some(val => val && val.toString().toLowerCase().includes(searchTerm.toLowerCase()));
+    }
+    // Meal type filter
+    let mealMatch = true;
+    if (selectedMeal !== 'all') {
+      mealMatch = (o.category || '').toLowerCase() === selectedMeal.toLowerCase();
+    }
+    // Date selection filter (for selectedDate)
+    let selectedDateMatch = true;
+    if (selectedDate) {
+      selectedDateMatch = o.date === selectedDate;
+    }
+    return dateMatch && approvalMatch && searchMatch && mealMatch && selectedDateMatch;
+  });
+
 
   return (
     <>
@@ -185,8 +232,7 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
                             label="Select Meal type" 
                             name="mealType" 
                             value={selectedMeal} 
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedMeal(e.target.value)} 
-                            placeholder="Select meal type" 
+                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedMeal(e.target.value)} 
                             options={[
                                 { label: "All Meal", value: "all" },
                                 { label: "Breakfast", value: "breakfast" },
@@ -261,22 +307,66 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
 
 
         <div className="header">Patient Meal Orders - {selectedMeal.toUpperCase()}</div>
+        
+        {/* Filter controls - improved UI, all in one row with searchbar */}
+        <div style={{
+          display: 'flex',
+          gap: '16px',
+          alignItems: 'flex-end',
+          margin: '20px 0',
+          background: '#f8fafc',
+          padding: '18px 20px',
+          borderRadius: '10px',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          flexWrap: 'wrap',
+          justifyContent: 'space-between'
+        }}>
+          <div style={{ display: 'flex', gap: '16px', flex: 1, minWidth: 0}}>
+            <FormDateInput
+              label="From Date"
+              name="fromDate"
+              value={fromDate}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFromDate(e.target.value)}
+            />
+            <FormDateInput
+              label="To Date"
+              name="toDate"
+              value={toDate}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(e.target.value)}
+            />
+            <div style={{ minWidth: '220px', width: '20%' }}>
+              <FormInputType
+                label="Approval Status"
+                name="approvalStatus"
+                value={approvalStatus}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setApprovalStatus(e.target.value)}
+                options={[
+                  { value: '', label: 'All' },
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'preparing', label: 'Preparing' },
+                  { value: 'delivered', label: 'Delivered' },
+                  { value: 'paused', label: 'Paused' },
+                  { value: 'stopped', label: 'Stopped' },
+                ]}
+              />
+            </div>
+          </div>
+          <div style={{ minWidth: 220, flex: '0 0 250px' }}>
+            <Searchbar
+              value={searchTerm}
+              onChange={e => setSearchTerm(e.target.value)}
+              placeholder="Search orders..."
+            />
+          </div>
+        </div>
+        
         <div className="card">
           {isLoading ? (
             <div className="loading">Loading orders...</div>
           ) : (
             <Table
-              data={mealOrders
-                .filter(order => {
-                  const o = order as any;
-                  if (selectedMeal === 'all') {
-                    return o.date === selectedDate;
-                  }
-                  return (
-                    (o.category || '').toLowerCase() === selectedMeal.toLowerCase() &&
-                    (o.date === selectedDate)
-                  );
-                })
+              data={filteredOrders
                 .map((order, index) => {
                   const o = order as any;
                   return {

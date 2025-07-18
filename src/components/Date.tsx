@@ -20,7 +20,8 @@ const FormDateInput: React.FC<FormDateInputProps> = ({
 }) => {
   return (
     <div className="form-group">
-      <label htmlFor={name}>{label}</label>
+      <label htmlFor={name} style={{ color: '#374151' }}>{label}</label>
+    
       <input
         type="date"
         name={name}

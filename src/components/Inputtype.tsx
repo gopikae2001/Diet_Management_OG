@@ -1,4 +1,4 @@
-// components/FormInputType.tsx
+
 import React from 'react';
 // import '../styles/input.css';
 

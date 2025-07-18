@@ -17,6 +17,8 @@ import type { DietRequest } from '../services/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../styles/DietRequestApproval.css'
+import FormDateInput from '../components/Date';
+import FormInputType from '../components/Inputtype';
 
 interface DietRequestApprovalProps {
     sidebarCollapsed?: boolean;
@@ -81,6 +83,9 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
   const [requests, setRequests] = useState<DietRequest[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [patientTypeFilter, setPatientTypeFilter] = useState<'all' | 'ip' | 'op'>('all');
+  const [fromDate, setFromDate] = useState('');
+  const [toDate, setToDate] = useState('');
+  const [approvalStatus, setApprovalStatus] = useState('');
 
   // Load diet requests from API
   useEffect(() => {
@@ -258,14 +263,40 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
   ];
   // console.log(columns);
 
-  const filteredData = requests.filter(item =>
-    (patientTypeFilter === 'all' ||
+  // Filtering logic
+  const filteredData = requests.filter(item => {
+    // Patient type filter
+    const patientTypeMatch =
+      patientTypeFilter === 'all' ||
       (patientTypeFilter === 'ip' && item.patientType === 'IP') ||
-      (patientTypeFilter === 'op' && item.patientType === 'OP')) &&
-    Object.values(item).some(
+      (patientTypeFilter === 'op' && item.patientType === 'OP');
+    // Search filter
+    const searchMatch = Object.values(item).some(
       val => val && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
-    )
-  );
+    );
+    // Date filter
+    let dateMatch = true;
+    if (fromDate) {
+      dateMatch = false;
+      if (item.date) {
+        const itemDate = item.date.split('T')[0] || item.date.split(' ')[0] || item.date;
+        if (itemDate >= fromDate) dateMatch = true;
+      }
+    }
+    if (toDate) {
+      if (item.date) {
+        const itemDate = item.date.split('T')[0] || item.date.split(' ')[0] || item.date;
+        if (itemDate > toDate) dateMatch = false;
+      }
+    }
+    // Approval status filter
+    let approvalMatch = true;
+    if (approvalStatus) {
+      approvalMatch = item.status === approvalStatus;
+    }
+    // Combine all filters
+    return patientTypeMatch && searchMatch && dateMatch && approvalMatch;
+  });
 
   return (
     <>
@@ -275,13 +306,55 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
         title="Diet Request Approval" 
         subtitle="View and manage all diet requests" 
       />
-      <div style={{display:'flex',justifyContent:'space-between',alignItems:"center" ,marginBottom: '20px' }}>
+      {/* Filter controls - improved UI, all in one row with searchbar */}
+      <div style={{
+        display: 'flex',
+        gap: '16px',
+        alignItems: 'flex-end',
+        marginBottom: '20px',
+        background: '#f8fafc',
+        padding: '18px 20px',
+        borderRadius: '10px',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between'
+      }}>
+        <div style={{ display: 'flex', gap: '16px', flex: 1, minWidth: 0 }}>
+          <FormDateInput
+            label="From Date"
+            name="fromDate"
+            value={fromDate}
+            onChange={e => setFromDate(e.target.value)}
+          />
+          <FormDateInput
+            label="To Date"
+            name="toDate"
+            value={toDate}
+            onChange={e => setToDate(e.target.value)}
+          />
+          <FormInputType
+            label="Approval Status"
+            name="approvalStatus"
+            value={approvalStatus}
+            onChange={e => setApprovalStatus(e.target.value)}
+            options={[
+              { value: '', label: 'All' },
+              { value: 'Pending', label: 'Pending' },
+              { value: 'Diet Order Placed', label: 'Diet Order Placed' },
+              { value: 'Rejected', label: 'Rejected' },
+            ]}
+          />
+        </div>
+        <div style={{ minWidth: 220, flex: '0 0 250px' }}>
+          <Searchbar 
+            value={searchTerm} 
+            onChange={handleSearchChange} 
+            placeholder="Search diet requests..."
+          />
+        </div>
+      </div>
+      <div style={{display:'flex',justifyContent:'flex-start',alignItems:"center" ,marginBottom: '20px' }}>
         <PatientTypeToggle value={patientTypeFilter} onChange={setPatientTypeFilter} />
-        <Searchbar 
-          value={searchTerm} 
-          onChange={handleSearchChange} 
-          placeholder="Search diet requests..."
-        />
       </div>
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
