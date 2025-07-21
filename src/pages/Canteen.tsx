@@ -224,38 +224,64 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
         {/* <div className="canteen-container"> */}
         {/* <div className="header"> */}
         <SectionHeading title="Canteen Interface" subtitle="Meal preparation and delivery management" />
-         
-         <form > 
-        <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start',marginBottom:'10px', width:'60%' }}>
-                        <div style={{ flex: 1 }}>
-                            <FormInputType
-                            label="Select Meal type" 
-                            name="mealType" 
-                            value={selectedMeal} 
-                            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedMeal(e.target.value)} 
-                            options={[
-                                { label: "All Meal", value: "all" },
-                                { label: "Breakfast", value: "breakfast" },
-                                { label: "Brunch", value: "brunch" },
-                                { label: "Lunch", value: "lunch" },
-                                { label: "Evening", value: "evening" },
-                                { label: "Dinner", value: "dinner" },
-                            ]}
-                            />
-                        </div>
-                        <div style={{ flex: 1 }}>
-                            <FormDateInput 
-                            label="Select Date" 
-                            name="date" 
-                            value={selectedDate} 
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)} 
-                            
-                            />
-                        </div>
-                    </div>
-                    </form>
 
-             
+        <form >
+          <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '20px', width: '60%'}}>
+            <div style={{ flex: 1, minWidth: '220px' }}>
+              <FormInputType
+                label="Select Meal type"
+                name="mealType"
+                value={selectedMeal}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedMeal(e.target.value)}
+                options={[
+                  { label: "All Meal", value: "all" },
+                  { label: "Breakfast", value: "breakfast" },
+                  { label: "Brunch", value: "brunch" },
+                  { label: "Lunch", value: "lunch" },
+                  { label: "Evening", value: "evening" },
+                  { label: "Dinner", value: "dinner" },
+                ]}
+              />
+            </div>
+            <div style={{ flex: 1, minWidth: '100px' }}>
+              <FormDateInput
+                label="Select Date"
+                name="date"
+                value={selectedDate}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSelectedDate(e.target.value)}
+
+              />
+            </div>
+            {/* <div style={{flex: 1, minWidth: '100px', marginLeft: '17rem'}}>
+              <FormDateInput
+                label="To Date"
+                name="toDate"
+                value={toDate}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(e.target.value)}
+              />
+            </div>
+            <div style={{ minWidth: '220px', width: '20%', marginLeft: '17rem' }}>
+              <FormInputType
+                label="Approval Status"
+                name="approvalStatus"
+                value={approvalStatus}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setApprovalStatus(e.target.value)}
+                options={[
+                  { value: '', label: 'All' },
+                  { value: 'pending', label: 'Pending' },
+                  { value: 'active', label: 'Active' },
+                  { value: 'preparing', label: 'Preparing' },
+                  { value: 'delivered', label: 'Delivered' },
+                  { value: 'paused', label: 'Paused' },
+                  { value: 'stopped', label: 'Stopped' },
+                ]}
+              />
+            </div> */}
+
+          </div>
+        </form>
+
+
 
 
 
@@ -307,21 +333,21 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
 
 
         <div className="header">Patient Meal Orders - {selectedMeal.toUpperCase()}</div>
-        
+
         {/* Filter controls - improved UI, all in one row with searchbar */}
         <div style={{
           display: 'flex',
           gap: '16px',
           alignItems: 'flex-end',
           margin: '20px 0',
-          background: '#f8fafc',
           padding: '18px 20px',
           borderRadius: '10px',
-          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
           flexWrap: 'wrap',
-          justifyContent: 'space-between'
+          justifyContent: 'flex-end',
+          boxShadow: '0 1px 4px rgba(0,0,0,0.04)',
+          background: '#f8fafc',
         }}>
-          <div style={{ display: 'flex', gap: '16px', flex: 1, minWidth: 0}}>
+          <div style={{ display: 'flex', gap: '16px', flex: 1, minWidth: 0 }}>
             <FormDateInput
               label="From Date"
               name="fromDate"
@@ -360,7 +386,7 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
             />
           </div>
         </div>
-        
+
         <div className="card">
           {isLoading ? (
             <div className="loading">Loading orders...</div>

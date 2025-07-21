@@ -12,7 +12,7 @@ import ApproveButton from '../components/AcceptButton';
 import RejectButton from '../components/RejectButton';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEye } from '@fortawesome/free-solid-svg-icons';
-import { dietRequestsApi } from '../services/api';
+import { dietRequestsApi, dietRequestApprovalApi } from '../services/api';
 import type { DietRequest } from '../services/api';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -112,6 +112,16 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
   const handleApprove = async (id: string) => {
     try {
       await dietRequestsApi.update(id, { status: 'Diet Order Placed' });
+      // Store approval in db.json
+      const approvedRequest = requests.find(r => r.id === id);
+      if (approvedRequest) {
+        await dietRequestApprovalApi.create({
+          ...approvedRequest,
+          approvalAction: 'approved',
+          approvalTimestamp: new Date().toISOString(),
+          approvalStatus: 'Diet Order Placed',
+        });
+      }
       const updatedRequests = await dietRequestsApi.getAll();
       setRequests(updatedRequests);
       toast.success('Diet request approved successfully!');
@@ -124,6 +134,16 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
   const handleReject = async (id: string) => {
     try {
       await dietRequestsApi.update(id, { status: 'Rejected' });
+      // Store rejection in db.json
+      const rejectedRequest = requests.find(r => r.id === id);
+      if (rejectedRequest) {
+        await dietRequestApprovalApi.create({
+          ...rejectedRequest,
+          approvalAction: 'rejected',
+          approvalTimestamp: new Date().toISOString(),
+          approvalStatus: 'Rejected',
+        });
+      }
       const updatedRequests = await dietRequestsApi.getAll();
       setRequests(updatedRequests);
       toast.error('Diet request rejected successfully!');
@@ -250,7 +270,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
               style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
               title="View Diet Order"
             >
-              <FontAwesomeIcon icon={faEye} style={{ color: '#2196f3', fontSize: 16 }} />
+              <FontAwesomeIcon icon={faEye} style={{ color: '#2196f3', fontSize: 18 }} />
             </button>
           )}
           <DeleteButton 
@@ -332,6 +352,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
             value={toDate}
             onChange={e => setToDate(e.target.value)}
           />
+          <div style={{ minWidth: '220px', width: '20%' }}>
           <FormInputType
             label="Approval Status"
             name="approvalStatus"
@@ -344,6 +365,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
               { value: 'Rejected', label: 'Rejected' },
             ]}
           />
+          </div>
         </div>
         <div style={{ minWidth: 220, flex: '0 0 250px' }}>
           <Searchbar 

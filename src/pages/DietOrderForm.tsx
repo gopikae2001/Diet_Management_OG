@@ -30,6 +30,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { canteenOrdersApi } from '../services/api';
 import type { CanteenOrder } from '../services/api';
 import Avatar from '../components/Avatar';
+import { foodItemsApi } from '../services/api';
 
 
 interface DietOrderFormProps {
@@ -69,6 +70,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
   const [editModalData, setEditModalData] = useState<any>(null);
   const [search, setSearch] = useState('');
   const [mealOrders, setMealOrders] = useState<CanteenOrder[]>([]);
+  const today = new Date().toISOString().split('T')[0];
 
   // Initialize form with default values or values from location state
   const [form, setForm] = useState<FormState>(() => {
@@ -160,6 +162,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
   
   const [selectedPackageDetails, setSelectedPackageDetails] = useState<DietPackage | null>(null);
   const [foodIntakeList, setFoodIntakeList] = useState<any[]>([]);
+  const [foodItems, setFoodItems] = useState([]);
 
   // Update selected package details when dietPackage changes
   useEffect(() => {
@@ -178,6 +181,18 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
     };
     loadOrders();
   }, [selectedPackageDetails]);
+
+  useEffect(() => {
+    const fetchFoodItems = async () => {
+      try {
+        const items = await foodItemsApi.getAll();
+        setFoodItems(items);
+      } catch (err) {
+        console.error('Failed to fetch food items', err);
+      }
+    };
+    fetchFoodItems();
+  }, []);
 
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -493,7 +508,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
         <SectionHeading title="Diet Order" subtitle="Meal preparation and delivery management" />
       {/* </div> */}
       
-      <div className="form-section3">
+      <div className="form-section4">
 
         {/* infoMessage && (
           <div style={{ color: '#b71c1c', fontWeight: 600, marginBottom: 10 }}>{infoMessage}</div>
@@ -514,7 +529,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
               gap: '40px',
               marginBottom: '0px',
             }}>
+
+              
+              
               {/* Avatar on the left, info grid on the right */}
+              
               <div style={{ flex: '0 0 auto' }}>
                 <Avatar name={form.patientName || '-'} size={100} />
               </div>
@@ -579,214 +598,20 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                     <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>UHID</div>
                     <div style={{ fontWeight: 700, color: '#222' }}>{form.patientId || '-'}</div>
                   </div>
-                  {/* ABHA Address */}
+                  
                   {/* <div>
                     <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>ABHA Address</div>
                     <div style={{ fontWeight: 700, color: '#0093b8', cursor: 'pointer', textDecoration: 'underline' }}>No ABHA Found</div>
                   </div> */}
-                  {/* Civil IDs */}
-                  <div>
-                    <div style={{ color: '#888', fontWeight: 500, fontSize: '13px', marginBottom: 2 }}>Civil IDs</div>
-                    <div style={{ fontWeight: 700, color: '#222' }}>-</div>
-                  </div>
+                  
                 </div>
+                
               </div>
             </div>
+            
           </div>
 
-          {/* Diet Package, Package Rate, Dates, Status, Approval Status, Doctor Notes - Static if viewOnly */}
-          {/* <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start',marginBottom:'10px' }}>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Diet Package</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>
-                    {dietPackages.find(pkg => pkg.id === form.dietPackage)?.name || 'Not provided'}
-                  </div>
-                </>
-              ) : (
-                <FormInputType 
-                  label="Diet Package" 
-                  name="dietPackage" 
-                  value={form.dietPackage} 
-                  onChange={handleChange} 
-                  options={dietPackages.map(pkg => ({ value: pkg.id, label: `${pkg.name} ${pkg.type ? `(${pkg.type})` : ''}` }))} 
-                />
-              )}
-            </div>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Package Rate</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>
-                    {form.packageRate || 'Not provided'}
-                  </div>
-                </>
-              ) : (
-                <FormInputs 
-                  label="Package Rate" 
-                  name="packageRate" 
-                  value={form.packageRate} 
-                  readOnly 
-                  onChange={() => {}} 
-                />
-              )}
-            </div>
-          </div>
-
-          {selectedPackageDetails && (
-            <div className="package-meals" style={{ 
-              marginTop: '15px',
-              border: '1px solid #e0e0e0',
-              borderRadius: '4px',
-              padding: '10px',
-              backgroundColor: '#f9f9f9',
-              marginBottom: '15px'
-            }}>
-              <h4 style={{ margin: '0 0 10px 0', color: '#333' }}>Meal Plan:</h4>
-                  
-                  {selectedPackageDetails.breakfast.length > 0 && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <h5 style={{ margin: '0 0 5px 0', color: '#555' }}>Breakfast</h5>
-                      <ul style={{ margin: '0', paddingLeft: '20px' }}>
-                        {selectedPackageDetails.breakfast.map((item, idx) => (
-                          <li key={`breakfast-${idx}`}>
-                            {item.quantity} {item.unit} {item.foodItemName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedPackageDetails.brunch.length > 0 && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <h5 style={{ margin: '0 0 5px 0', color: '#555' }}>Brunch</h5>
-                      <ul style={{ margin: '0', paddingLeft: '20px' }}>
-                        {selectedPackageDetails.brunch.map((item, idx) => (
-                          <li key={`brunch-${idx}`}>
-                            {item.quantity} {item.unit} {item.foodItemName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedPackageDetails.lunch.length > 0 && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <h5 style={{ margin: '0 0 5px 0', color: '#555' }}>Lunch</h5>
-                      <ul style={{ margin: '0', paddingLeft: '20px' }}>
-                        {selectedPackageDetails.lunch.map((item, idx) => (
-                          <li key={`lunch-${idx}`}>
-                            {item.quantity} {item.unit} {item.foodItemName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedPackageDetails.dinner.length > 0 && (
-                    <div style={{ marginBottom: '10px' }}>
-                      <h5 style={{ margin: '0 0 5px 0', color: '#555' }}>Dinner</h5>
-                      <ul style={{ margin: '0', paddingLeft: '20px' }}>
-                        {selectedPackageDetails.dinner.map((item, idx) => (
-                          <li key={`dinner-${idx}`}>
-                            {item.quantity} {item.unit} {item.foodItemName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  {selectedPackageDetails.evening.length > 0 && (
-                    <div>
-                      <h5 style={{ margin: '0 0 5px 0', color: '#555' }}>Evening</h5>
-                      <ul style={{ margin: '0', paddingLeft: '20px' }}>
-                        {selectedPackageDetails.evening.map((item, idx) => (
-                          <li key={`evening-${idx}`}>
-                            {item.quantity} {item.unit} {item.foodItemName}
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
-                  )}
-                  
-                  <div style={{ marginTop: '15px', paddingTop: '10px', borderTop: '1px solid #e0e0e0' }}>
-                    <p style={{ margin: '5px 0', fontWeight: '500' }}>Nutritional Information:</p>
-                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '5px' }}>
-                      <div>Calories: {selectedPackageDetails.totalNutrition.calories.toFixed(0)} kcal</div>
-                      <div>Protein: {selectedPackageDetails.totalNutrition.protein.toFixed(1)}g</div>
-                      <div>Carbs: {selectedPackageDetails.totalNutrition.carbohydrates.toFixed(1)}g</div>
-                      <div>Fat: {selectedPackageDetails.totalNutrition.fat.toFixed(1)}g</div>
-                    </div>
-                  </div>
-                </div>
-              )} */}
-            {/* </div> */}
-          {/* </div> */}
-
-          {/* <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start',marginBottom:'10px' }}>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Start Date</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>{form.startDate || 'Not provided'}</div>
-                </>
-              ) : (
-                <FormDateInput label="Start Date" name="startDate" value={form.startDate} onChange={handleChange} />
-              )}
-            </div>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>End Date</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>{form.endDate || 'Not provided'}</div>
-                </>
-              ) : (
-                <FormDateInput label="End Date" name="endDate" value={form.endDate} onChange={handleChange} />
-              )}
-            </div>
-          </div>
-
-          <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start',marginBottom:'10px' }}>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Status</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>{form.status || 'Not provided'}</div>
-                </>
-              ) : (
-                <FormInputType label="Status" name="status" value={form.status} onChange={handleChange} options={[
-                  { value: 'active', label: 'Active' },
-                  { value: 'paused', label: 'Paused' },
-                  { value: 'stopped', label: 'Stopped' },
-                ]} />
-              )}
-            </div>
-            <div style={{ flex: 1 }}>
-              {viewOnly ? (
-                <>
-                  <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Approval Status</label>
-                  <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>{form.approvalStatus || 'Not provided'}</div>
-                </>
-              ) : (
-                <FormInputType label="Approval Status" name="approvalStatus" value={form.approvalStatus} onChange={handleChange} options={[
-                  { value: 'pending', label: 'Pending' },
-                  { value: 'approved', label: 'Approved' },
-                  { value: 'rejected', label: 'Rejected' },
-                ]} />
-              )}
-            </div>
-          </div>
-          <div style={{width:'50%',marginBottom:'10px'}}>
-            {viewOnly ? (
-              <>
-                <label style={{ display: 'block', fontSize: '14px', color: '#6c757d', marginBottom: '5px' }}>Doctor Notes</label>
-                <div style={{ padding: '10px', backgroundColor: '#fff', border: '1px solid #ced4da', borderRadius: '4px', fontSize: '16px', color: '#495057' }}>{form.doctorNotes || 'Not provided'}</div>
-              </>
-            ) : (
-              <AddressInput label="Doctor Notes" placeholder="Enter doctor notes" name="doctorNotes" value={form.doctorNotes} onChange={handleChange} />
-            )}
-          </div> */}
+          
           {/* Food Intake Entry Section */}
       <div style={{
         // background: '#fff',
@@ -825,7 +650,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
         </div> */}
         {/* Sub-header with stretched background */}
         <div style={{
-          background: '#038ba4',
+          background: '#37a9be',
           color: '#fff',
           fontWeight: 600,
           fontSize: 13,
@@ -839,19 +664,23 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
         }}>
           Add Food Intake
         </div>
+
+      
         {/* White container for form */}
         <div style={{
           background: '#fff',
-          borderRadius: '0 0 10px 10px',
+          margin: '0 -20px 0 -20px',
+          borderRadius: '6px',
           boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
-          padding: '18px',
+          padding: '15px',
           marginBottom: '24px',
-          marginTop: 0,
+          marginTop: 10,
+          border: '1px solid #ddd',
         }}>
           <form onSubmit={handleAddFoodIntake}>
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '18px 24px', marginBottom: 18 }}>
+            <div style={{ display:'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr ', gap: '18px 24px', marginBottom: 20, padding: '10px' }}>
               {/* <Input label="Day" name="day" value={foodIntake.day} onChange={handleFoodIntakeChange} /> */}
-              <Input label="Date" name="date" value={foodIntake.date} onChange={handleFoodIntakeChange} type="date" placeholder={dateInputPlaceholder} />
+              <Input label="Date" name="date" value={foodIntake.date} onChange={handleFoodIntakeChange} type="date" placeholder={dateInputPlaceholder} min={today} />
               <Input label="Day" name="day" value={foodIntake.day} onChange={handleFoodIntakeChange} readOnly />
               <Inputtype label="Category" name="category" value={foodIntake.category} onChange={handleFoodIntakeChange} options={[
                 { value: '', label: 'Select category' },
@@ -860,7 +689,17 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                 { value: 'Dinner', label: 'Dinner' },
                 { value: 'Snack', label: 'Snack' },
               ]} />
-              <Input label="Food Item" name="fooditem" value={foodIntake.fooditem} onChange={handleFoodIntakeChange} />
+              <Inputtype
+                label="Food Item"
+                name="fooditem"
+                value={foodIntake.fooditem}
+                onChange={handleFoodIntakeChange}
+                options={[
+                  
+                  ...foodItems.map((item: any) => ({ value: item.name, label: item.name }))
+                ]}
+              />
+              
               <Input label="Time" name="time" value={foodIntake.time} onChange={handleFoodIntakeChange} type="time" />
               <Inputtype label="AM/PM" name="ampm" value={foodIntake.ampm} onChange={handleFoodIntakeChange} options={[
                 { value: 'AM', label: 'AM' },
@@ -873,11 +712,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                 { value: 'ml', label: 'ml' },
                 { value: 'pcs', label: 'pcs' },
               ]} />
-              <Input label="Carbohydrates (g)" name="carbohydrates" value={foodIntake.carbohydrates} onChange={handleFoodIntakeChange} type="number" />
+              {/* <Input label="Carbohydrates (g)" name="carbohydrates" value={foodIntake.carbohydrates} onChange={handleFoodIntakeChange} type="number" />
               <Input label="Proteins (g)" name="proteins" value={foodIntake.proteins} onChange={handleFoodIntakeChange} type="number" />
-              <Input label="Fat (g)" name="fat" value={foodIntake.fat} onChange={handleFoodIntakeChange} type="number" />
-              <Input label="Calories (kcal)" name="calories" value={foodIntake.calories} onChange={handleFoodIntakeChange} type="number" />
-              <Input label="End Date" name="end_date" value={foodIntake.end_date} onChange={handleFoodIntakeChange} type="date" />
+              <Input label="Fat (g)" name="fat" value={foodIntake.fat} onChange={handleFoodIntakeChange} type="number" /> */}
+              <Input label="Calorie (kcal)" name="calories" value={foodIntake.calories} onChange={handleFoodIntakeChange} type="number" placeholder="Enter Calorie"/>
+              <Input label="End Date" name="end_date" value={foodIntake.end_date} onChange={handleFoodIntakeChange} type="date" min={today} />
               <Input label="Comments" name="comments" value={foodIntake.comments} onChange={handleFoodIntakeChange} />
               <Inputtype label="Status" name="status" value={foodIntake.status} onChange={handleFoodIntakeChange} options={[
                 { value: '', label: 'Select status' },
@@ -886,7 +725,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                 { value: 'Stopped', label: 'Stopped' },
               ]} />
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12, marginBottom: 18 }}>
+            <div style={{ display: 'flex', justifyContent: 'left', gap: 12, marginBottom: 3, paddingLeft: '10px' }}>
               {/* <button type="submit" onClick={handleAddFoodIntake} 
               style={{ background: '#0093b8', color: '#fff', border: 'none', borderRadius: 6, padding: '8px 28px', 
               fontWeight: 600, fontSize: 16, cursor: 'pointer' }}>Add</button> */}
@@ -895,6 +734,20 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
               </ButtonWithGradient>
             </div>
           </form>
+          </div>
+
+
+           {/* White container for form */}
+        <div style={{
+          background: '#fff',
+          margin: '0 -20px 0 -20px',
+          borderRadius: '6px',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          padding: '15px',
+          marginBottom: '24px',
+          marginTop: 10,
+          border: '1px solid #ddd',
+        }}>
           {foodIntakeList.length > 0 && (
             <div  style={{ margin: '18px 0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
               <Searchbar value={search} onChange={e => setSearch(e.target.value)} />
@@ -918,18 +771,19 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                   { key: 'fooditem', header: 'Food Item' },
                   { key: 'time', header: 'Time' },
                   { key: 'intake_amount', header: 'Intake Amount' },
-                  { key: 'unit', header: 'Unit' },
-                  { key: 'carbohydrates', header: 'Carbs' },
-                  { key: 'proteins', header: 'Proteins' },
-                  { key: 'fat', header: 'Fat' },
+                  // { key: 'unit', header: 'Unit' },
+                  // { key: 'carbohydrates', header: 'Carbs' },
+                  // { key: 'proteins', header: 'Proteins' },
+                  // { key: 'fat', header: 'Fat' },
                   { key: 'calories', header: 'Calories' },
                   { key: 'end_date', header: 'End Date' },
                   { key: 'comments', header: 'Comments' },
                   { key: 'status', header: 'Status' },
                   { key: 'action', header: 'Action', render: (_v, row = {}) => (
                     <span style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                       <EditButton onClick={() => handleEditFoodIntake(row)} size={18} />
                       <DeleteButton onClick={() => handleDeleteFoodIntake(row.id)} size={18} />
-                      <EditButton onClick={() => handleEditFoodIntake(row)} size={18} />
+                     
                     </span>
                   ) },
                   { key: 'details', header: 'Details', render: (_v, row = {}) => (
@@ -968,6 +822,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
             )} */}
         </form>
       </div>
+      
       {/* </div> */}
 
      
@@ -978,6 +833,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       onRequestClose={() => setEditModalOpen(false)}
       initialData={editModalData}
       onSave={handleSaveFoodIntakeEdit}
+      dateList={foodIntakeList.map(item => item.date)}
     />
     <ToastContainer autoClose={1300} />
     </>

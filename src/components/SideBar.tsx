@@ -86,7 +86,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
               </NavLink>
             </li>
 
-            {/* <li>
+            <li>
               <NavLink
                 to="/food-item" style={{fontWeight:400,color:"#cccccc"}}
                 className={({ isActive }) =>
@@ -99,9 +99,9 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Food Item"}
               </NavLink>
-            </li> */}
+            </li>
 
-            {/* <li>
+            <li>
               <NavLink
                 to="/fooditemdata" style={{fontWeight:400,color:"#cccccc"}}
                 className={({ isActive }) =>
@@ -114,7 +114,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Food Item Table"}
               </NavLink>
-            </li> */}
+            </li>
 
             {/* <li>
               <NavLink

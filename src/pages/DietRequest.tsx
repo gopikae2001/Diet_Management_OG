@@ -39,6 +39,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
         approval: 'Pending',
         patientType: '',
         email: '',
+        allergies: '',
         address: '',
         bloodGroup: '',
         tokenNo: '',
@@ -145,6 +146,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                         doctor: request.doctor,
                         doctorNotes: request.doctorNotes,
                         patientType: request.patientType,
+                        allergies: request.allergies,
                         date: request.date,
                         approval: request.approval,
                     }
@@ -274,6 +276,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                 bloodGroup: newRequest.bloodGroup,
                 date: new Date().toISOString(),
                 approval: newRequest.approval,
+                allergies: newRequest.allergies,
 
             };
 
@@ -283,7 +286,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
             const updatedRequests = await dietRequestsApi.getAll();
             setRequests(updatedRequests);
 
-            setNewRequest({ patientId: '', patientName: '', age: '', gender: '', contactNumber: '', bed: '', ward: '', floor: '', doctor: '', doctorNotes: '', status: 'Pending', approval: 'Pending', patientType: '', email: '', address: '', bloodGroup: '', tokenNo: '', visitId: '', date: '' });
+            setNewRequest({ patientId: '', patientName: '', age: '', gender: '', contactNumber: '', bed: '', ward: '', floor: '', doctor: '', doctorNotes: '', status: 'Pending', approval: 'Pending', patientType: '', email: '', address: '', bloodGroup: '', tokenNo: '', visitId: '', date: '', allergies: '' });
 
             toast.success('Diet request created successfully!');
 
@@ -630,12 +633,12 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                                     />
                                 </div>
                                 <div className='form-row1'>
-                                     <FormDateInput
-                                        label="Date"
-                                        name="date"
-                                        value={newRequest.date}
+                                     <FormInputs
+                                        label="Allergies"
+                                        name="allergies"
+                                        value={newRequest.allergies}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                                            setNewRequest({ ...newRequest, date: e.target.value })
+                                            setNewRequest({ ...newRequest, allergies: e.target.value })
                                         }
                                         
                                     />

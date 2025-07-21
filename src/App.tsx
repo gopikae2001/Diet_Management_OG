@@ -7,7 +7,6 @@ import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
 import Dashboard from './pages/Dashboard';
 import FoodItemForm from './pages/Fooditem';
-import FoodItemData from './pages/fooditemdata';
 import DietPackageForm from './pages/Dietpackage';
 import DietPackageList from './pages/Dietpackagelist';
 import DietRequest from './pages/DietRequest';
@@ -16,6 +15,8 @@ import DietOrderForm from './pages/DietOrderForm';
 import PatientDietHistory from './pages/PatientDietHistory';
 import DieticianInterface from './pages/Dietician';
 import CanteenInterface from './pages/Canteen';
+// import FoodItemData from './pages/Fooditemdata';
+import FoodItemTable from './pages/FoodItemTable';
 
 const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
@@ -36,7 +37,8 @@ const App: React.FC = () => {
                 <Route path="/dashboard" element={<Dashboard sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
                 <Route path="/food-item" element={<FoodItemForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/food-item/:id" element={<FoodItemForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/fooditemdata" element={<FoodItemData sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
+                {/* <Route path="/fooditemdata" element={<FoodItemData sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
+                <Route path="/fooditemdata" element={<FoodItemTable sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/dietpackage" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/dietpackagelist" element={<DietPackageList sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/dietpackage/:id" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />

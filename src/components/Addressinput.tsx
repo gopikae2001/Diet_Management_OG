@@ -1,5 +1,5 @@
 import React from 'react';
-// import '../styles/DietRequest.css';
+
 
 interface AddressInputProps {
   name: string;
@@ -22,7 +22,7 @@ const AddressInput: React.FC<AddressInputProps> = ({
 }) => {
   return (
     <div className="form-row">
-      <label htmlFor={name} style={{ color: '#374151' }}>{label}</label>
+      <label htmlFor={name} style={{ color: '#5a5a5a', fontSize: '14px' }}>{label}</label>
       <textarea
         name={name}
         className="form-control"

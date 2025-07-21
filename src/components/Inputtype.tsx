@@ -20,7 +20,7 @@ const FormInputType: React.FC<FormInputTypeProps> = ({ label, name, id = name, v
   return (
     <div className="mb-2">
       {label && (
-        <label htmlFor={name} className="form-label" style={{ color: '#374151' }}>
+        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a' , fontSize: '14px' }}>
           {label}
         </label>
       )}

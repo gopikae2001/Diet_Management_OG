@@ -10,6 +10,7 @@ interface FoodIntakeEditModalProps {
   onRequestClose: () => void;
   initialData: any;
   onSave: (data: any) => void;
+  dateList: string[]; // Add this prop
 }
 
 const defaultState = {
@@ -31,7 +32,7 @@ const defaultState = {
   status: '',
 };
 
-const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onRequestClose, initialData, onSave }) => {
+const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onRequestClose, initialData, onSave, dateList }) => {
   const [form, setForm] = React.useState({ ...defaultState, ...initialData });
 
   React.useEffect(() => {
@@ -39,7 +40,14 @@ const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onReq
   }, [initialData, isOpen]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    const { name, value } = e.target;
+    const { name, value, type } = e.target;
+    if (name === 'date') {
+      // Build a unique, sorted list of dates including the new value
+      const allDates = Array.from(new Set([...dateList.filter(d => d), value])).sort();
+      const newDay = allDates.indexOf(value) + 1;
+      setForm((prev: any) => ({ ...prev, date: value, day: newDay.toString() }));
+      return;
+    }
     setForm((prev: any) => ({ ...prev, [name]: value }));
   };
 

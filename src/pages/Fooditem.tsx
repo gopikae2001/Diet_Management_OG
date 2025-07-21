@@ -17,7 +17,7 @@ interface FoodItemProps {
     toggleSidebar?: () => void;
 }
 
-const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSidebar }) => {
+const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSidebar }) => {
     const { id } = useParams<{ id?: string }>();
     const isEditMode = Boolean(id);
     const [foodType, setFoodType] = useState('');
@@ -73,8 +73,8 @@ const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggl
         
         // Check for required fields
         const requiredFields = [
-            'name', 'foodType', 'category', 'unit', 'quantity', 'price',
-            'calories', 'protein', 'carbohydrates', 'fat'
+            'name', 'foodType', 'category', 'unit', 'quantity', 'price'
+            
         ];
         const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
         
@@ -84,28 +84,28 @@ const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggl
         }
         
         // Validate numeric fields
-        const numericFields = ['quantity', 'calories', 'protein', 'carbohydrates', 'fat', 'price'];
-        const invalidNumericFields = numericFields.filter(field => {
-            const value = formData[field as keyof typeof formData];
-            return isNaN(Number(value)) || value === '';
-        });
+        // const numericFields = ['quantity', 'calories', 'protein', 'carbohydrates', 'fat', 'price'];
+        // const invalidNumericFields = numericFields.filter(field => {
+        //     const value = formData[field as keyof typeof formData];
+        //     return isNaN(Number(value)) || value === '';
+        // });
         
-        if (invalidNumericFields.length > 0) {
-            toast.error(`Please enter valid numbers for: ${invalidNumericFields.join(', ')}`);
-            return;
-        }
+        // if (invalidNumericFields.length > 0) {
+        //     toast.error(`Please enter valid numbers for: ${invalidNumericFields.join(', ')}`);
+        //     return;
+        // }
         
         // Ensure all nutritional values are non-negative
-        const nutritionalFields = ['calories', 'protein', 'carbohydrates', 'fat'];
-        const negativeValues = nutritionalFields.filter(field => {
-            const value = Number(formData[field as keyof typeof formData]);
-            return value < 0;
-        });
+        // const nutritionalFields = ['calories', 'protein', 'carbohydrates', 'fat'];
+        // const negativeValues = nutritionalFields.filter(field => {
+        //     const value = Number(formData[field as keyof typeof formData]);
+        //     return value < 0;
+        // });
         
-        if (negativeValues.length > 0) {
-            toast.error(`Nutritional values cannot be negative: ${negativeValues.join(', ')}`);
-            return;
-        }
+        // if (negativeValues.length > 0) {
+        //     toast.error(`Nutritional values cannot be negative: ${negativeValues.join(', ')}`);
+        //     return;
+        // }
         
         try {
             if (isEditMode && id) {
@@ -226,7 +226,8 @@ const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggl
                         </div>
                     </div>
 
-                    <div className="quantity-container">
+                    <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width:'100%', marginTop:'15px' }}>
+                        <div style={{flex:1}}>
                         <FormInputs 
                             label="Quantity" 
                             name="quantity" 
@@ -234,32 +235,58 @@ const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggl
                             onChange={handleInputChange} 
                             placeholder="Enter quantity" 
                         />
+                        </div>
+                         <div style={{ flex: 1 }}>
+                            <FormInputs 
+                            label="Price" 
+                            name="price" 
+                            value={formData.price} 
+                            onChange={handleInputChange} 
+                            placeholder="Enter price" 
+                            />
+                        </div>
                     </div>
+
+                    <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width:'100%', marginTop:'15px', width: '50%' }}>
+                    <div style={{flex:1}}>
+                            <FormInputs
+                            label="Price Per Unit" 
+                            name="pricePerUnit" 
+                            value={formData.pricePerUnit} 
+                            onChange={handleInputChange} 
+                         readOnly
+                            />
+                        </div>
+                    </div>
+
+
 
                     {/* Nutritional Info Header */}
-                    <div className="sub-header1">Nutritional Information</div>
+                    {/* <div className="sub-header2">Nutritional Information</div> */}
 
                     {/* Nutritional Input Section */}
-                    <div className="nutritional-section">
-                        <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-                            <div style={{ flex: 1 }}>
+                    {/* <div className="nutritional-section"> */}
+                        {/* <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}> */}
+                            {/* <div style={{ flex: 1 }}>
                                 <FormInputs label="Calories" name="calories" value={formData.calories} onChange={handleInputChange} placeholder="Enter calories" />
-                            </div>
-                            <div style={{ flex: 1 }}>
+                            </div> */}
+                            {/* <div style={{ flex: 1 }}>
                                 <FormInputs label="Protein" name="protein" value={formData.protein} onChange={handleInputChange} placeholder="Enter protein" />
-                            </div>
-                            <div style={{ flex: 1 }}>
+                            </div> */}
+                            {/* <div style={{ flex: 1 }}>
                                 <FormInputs label="Carbohydrates" name="carbohydrates" value={formData.carbohydrates} onChange={handleInputChange} placeholder="Enter carbohydrates" />
-                            </div>
-                            <div style={{ flex: 1 }}>
+                            </div> */}
+                            {/* <div style={{ flex: 1 }}>
                                 <FormInputs label="Fat" name="fat" value={formData.fat} onChange={handleInputChange} placeholder="Enter fat" />
-                            </div>
-                        </div>
-                        <FormInputs label="Price" name="price" value={formData.price} onChange={handleInputChange} placeholder="Enter price" />
-                        <FormInputs label="Price Per Unit" name="pricePerUnit" value={formData.pricePerUnit} onChange={() => {}} placeholder="Price per unit" readOnly />
-                    </div>
-                 
+                            </div> */}
+                        {/* </div> */}
+
+
+
+                    {/* </div> */}
+                 <div style={{marginLeft:'3px', marginTop: '18px'}}>
                     <ButtonWithGradient text={isEditMode ? "Update Food Item" : "Add Food Item"} type="submit" />
+                </div>
                 </form>
               </div>
             </PageContainer>
@@ -268,4 +295,4 @@ const FoodItemForm: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggl
     );
 };
 
-export default FoodItemForm;
+export default FoodItem;

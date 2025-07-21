@@ -1,4 +1,3 @@
-
 const API_BASE_URL = 'http://192.168.50.90:3001';
 
 
@@ -264,4 +263,22 @@ export const addFoodIntakeApi = {
     }),
   delete: (id: string) =>
     apiCall(`AddFoodIntake/${id}`, { method: 'DELETE' }),
+}; 
+
+// Add Diet Request Approval API
+export const dietRequestApprovalApi = {
+  getAll: () => apiCall('Diet Request approval'),
+  getById: (id: string) => apiCall(`Diet Request approval/${id}`),
+  create: (entry: any) =>
+    apiCall('Diet Request approval', {
+      method: 'POST',
+      body: JSON.stringify({ ...entry, id: Date.now().toString() }),
+    }),
+  update: (id: string, entry: any) =>
+    apiCall(`Diet Request approval/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(entry),
+    }),
+  delete: (id: string) =>
+    apiCall(`Diet Request approval/${id}`, { method: 'DELETE' }),
 }; 

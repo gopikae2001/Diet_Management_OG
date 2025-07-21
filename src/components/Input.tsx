@@ -16,6 +16,8 @@ interface FormInputProps {
   maxLength?: number;
   pattern?: string;
   title?: string;
+  // Accept any other props (like min, max, step, etc.)
+  [key: string]: any;
 }
 
 const FormInputs: React.FC<FormInputProps> = ({
@@ -28,12 +30,13 @@ const FormInputs: React.FC<FormInputProps> = ({
   onFocus,
   onClick,
   placeholder,
-  readOnly = false
+  readOnly = false,
+  ...rest
 }) => {
   return (
     <div className="mb-2">
       {label && (
-        <label htmlFor={name} className="form-label" style={{ color: '#374151' }}>
+        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a', fontSize: '14px' }}>
           {label}
         </label>
       )}
@@ -48,6 +51,7 @@ const FormInputs: React.FC<FormInputProps> = ({
         onClick={onClick}
         placeholder={placeholder}
         readOnly={readOnly}
+        {...rest}
       />
     </div>
   );

@@ -109,7 +109,7 @@
     font-weight: 600;
   } */
    
-  .sub-header1{
+  .sub-header2{
     background-color: #37a9be;
     color: white;
     padding: 0.5rem 1rem;
@@ -120,11 +120,11 @@
   
   /* Section below sub-header */
   .nutritional-section {
-    background-color: #f8f9fa;
+    /* background-color: #f8f9fa; */
     border-radius: 0 0 4px 4px;
-    border: 1px solid #e9ecef;
+    /* border: 1px solid #e9ecef; */
     border-top: none;
     padding: 1rem;
-    margin-bottom: 2rem;
+    /* margin-bottom: 2rem; */
   }
   
