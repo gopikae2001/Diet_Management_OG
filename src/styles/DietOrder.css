@@ -13,11 +13,11 @@
   }
    
   .form-section4 {
-    /* border: 1px solid #ddd; */
-    /* border-radius: 6px; */
+    border: 1px solid #ddd;
+    border-radius: 6px;
     margin-bottom: 2rem;
     padding: 1.5rem;
-    /* background-color: #fff; */
+    background-color: #fff;
   }
   
   /* .form-section5 {

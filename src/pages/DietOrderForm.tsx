@@ -15,10 +15,11 @@ import Input from '../components/Input';
 import Inputtype from '../components/Inputtype';
 import { useNavigate } from 'react-router-dom';
 import { Form, useLocation } from 'react-router-dom';
-import { Button, Flex } from "antd";
+import { Modal } from "antd";
 import { dietOrdersApi, dietPackagesApi } from '../services/api';
 import type { DietOrder, DietPackage } from '../services/api';
-import { FaWhatsapp } from 'react-icons/fa';
+import { FaWhatsapp, FaRedo } from 'react-icons/fa';
+import type { FoodIntake } from '../services/api';
 import { FaRegClock, FaTrashAlt, FaEdit } from 'react-icons/fa';
 import Table from '../components/Table';
 import { addFoodIntakeApi } from '../services/api';
@@ -31,6 +32,8 @@ import { canteenOrdersApi } from '../services/api';
 import type { CanteenOrder } from '../services/api';
 import Avatar from '../components/Avatar';
 import { foodItemsApi } from '../services/api';
+import dayjs from 'dayjs';
+import CancelButton from "../components/CancelButton";
 
 
 interface DietOrderFormProps {
@@ -161,7 +164,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
   }
   
   const [selectedPackageDetails, setSelectedPackageDetails] = useState<DietPackage | null>(null);
-  const [foodIntakeList, setFoodIntakeList] = useState<any[]>([]);
+  const [foodIntakeList, setFoodIntakeList] = useState<FoodIntake[]>([]);
   const [foodItems, setFoodItems] = useState([]);
 
   // Update selected package details when dietPackage changes
@@ -351,6 +354,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
     }
   };
 
+  // Repeat Modal State
+  const [repeatModalVisible, setRepeatModalVisible] = useState(false);
+  const [selectedItems, setSelectedItems] = useState<Record<string, boolean>>({});
+  const [itemDates, setItemDates] = useState<Record<string, string>>({});
+
   // Food Intake State
   const [foodIntake, setFoodIntake] = useState({
     id: '',
@@ -466,12 +474,100 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       try {
         await addFoodIntakeApi.delete(id);
         setFoodIntakeList(prev => prev.filter(item => item.id !== id));
-        // setInfoMessage('Food intake entry deleted successfully.');
-        // setTimeout(() => setInfoMessage(''), 1000);
+        // Remove from selected items if it was selected
+        setSelectedItems(prev => {
+          const newSelected = { ...prev };
+          delete newSelected[id];
+          return newSelected;
+        });
       } catch (err) {
-        // setInfoMessage('Failed to delete food intake entry.');
-        // setTimeout(() => setInfoMessage(''), 2000);
+        console.error('Failed to delete food intake entry:', err);
       }
+    }
+  };
+
+  // Toggle item selection for repeat
+  const toggleItemSelection = (id: string) => {
+    setSelectedItems(prev => {
+      const newSelected = {
+        ...prev,
+        [id]: !prev[id]
+      };
+      
+      // If item is being selected, initialize its date to tomorrow
+      if (!prev[id]) {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const formattedDate = tomorrow.toISOString().split('T')[0];
+        setItemDates(prevDates => ({
+          ...prevDates,
+          [id]: formattedDate
+        }));
+      } else {
+        // If item is being unselected, remove its date
+        setItemDates(prev => {
+          const newDates = { ...prev };
+          delete newDates[id];
+          return newDates;
+        });
+      }
+      
+      return newSelected;
+    });
+  };
+  
+  // Handle date change for an item
+  const handleItemDateChange = (id: string, date: string) => {
+    setItemDates(prev => ({
+      ...prev,
+      [id]: date
+    }));
+  };
+
+  // Handle repeat button click
+  const handleRepeatClick = () => {
+    if (Object.values(selectedItems).some(selected => selected)) {
+      setRepeatModalVisible(true);
+    } else {
+      toast.info('Please select at least one item to repeat');
+    }
+  };
+
+  // Handle repeat confirmation
+  const handleRepeatConfirm = async () => {
+    try {
+      const selectedEntries = foodIntakeList.filter(item => selectedItems[item.id]);
+      const now = new Date();
+      const pad = (n: number) => n.toString().padStart(2, '0');
+      
+      // Process entries in parallel for better performance
+      await Promise.all(selectedEntries.map(async (entry) => {
+        const newDate = itemDates[entry.id] || entry.date;
+        const createdAt = `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+        
+        const newEntry = {
+          ...entry,
+          id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
+          date: newDate,
+          day: '', // Will be calculated based on the new date
+          createdAt,
+          patientId: form.patientId
+        };
+        
+        return addFoodIntakeApi.create(newEntry);
+      }));
+      
+      // Refresh the food intake list to include the newly created entries
+      const updatedList = await addFoodIntakeApi.getAll();
+      setFoodIntakeList(updatedList);
+      setSelectedItems({}); // Clear selection
+      setItemDates({}); // Clear dates
+      setRepeatModalVisible(false);
+      toast.success('Selected items have been repeated successfully');
+      
+    } catch (error) {
+      console.error('Failed to repeat items:', error);
+      toast.error('Failed to repeat items. Please try again.');
     }
   };
 
@@ -671,11 +767,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
           background: '#fff',
           margin: '0 -20px 0 -20px',
           borderRadius: '6px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
           padding: '15px',
           marginBottom: '24px',
           marginTop: 10,
-          border: '1px solid #ddd',
+          // border: '1px solid #ddd',
         }}>
           <form onSubmit={handleAddFoodIntake}>
             <div style={{ display:'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr ', gap: '18px 24px', marginBottom: 20, padding: '10px' }}>
@@ -742,11 +838,11 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
           background: '#fff',
           margin: '0 -20px 0 -20px',
           borderRadius: '6px',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.03)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.13)',
           padding: '15px',
           marginBottom: '24px',
           marginTop: 10,
-          border: '1px solid #ddd',
+          // border: '1px solid #ddd',
         }}>
           {foodIntakeList.length > 0 && (
             <div  style={{ margin: '18px 0', display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
@@ -779,13 +875,28 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                   { key: 'end_date', header: 'End Date' },
                   { key: 'comments', header: 'Comments' },
                   { key: 'status', header: 'Status' },
-                  { key: 'action', header: 'Action', render: (_v, row = {}) => (
-                    <span style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-                       <EditButton onClick={() => handleEditFoodIntake(row)} size={18} />
-                      <DeleteButton onClick={() => handleDeleteFoodIntake(row.id)} size={18} />
-                     
-                    </span>
-                  ) },
+                  { 
+                    key: 'select', 
+                    header: 'Select', 
+                    render: (_v, row = {}) => (
+                      <input 
+                        type="checkbox" 
+                        checked={!!selectedItems[row.id]} 
+                        onChange={() => toggleItemSelection(row.id)}
+                        style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                      />
+                    ) 
+                  },
+                  { 
+                    key: 'action', 
+                    header: 'Action', 
+                    render: (_v, row = {}) => (
+                      <span style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
+                        <EditButton onClick={() => handleEditFoodIntake(row)} size={18} />
+                        <DeleteButton onClick={() => handleDeleteFoodIntake(row.id)} size={18} />
+                      </span>
+                    ) 
+                  },
                   { key: 'details', header: 'Details', render: (_v, row = {}) => (
                     <span style={{ color: '#222', fontWeight: 500 }}>
                       {row.createdAt ? row.createdAt : '-'}
@@ -801,13 +912,32 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                 })}
               />
                {/* Send to Canteen button only for IP patients */}
-              {form.patientType.toLowerCase() === 'ip' && (
-                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px' }}>
+              {/* {form.patientType.toLowerCase() === 'ip' && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px', gap: 12 }}>
                   <ButtonWithGradient onClick={handleSendToCanteen} className="primary" type="button">
                     Send to Canteen
                   </ButtonWithGradient>
                 </div>
-              )}
+              )} */}
+
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '15px', gap: 12 }}>
+                <CancelButton
+                  onClick={handleRepeatClick}
+                  className="primary" 
+                  type="button"
+                >
+                  <FaRedo style={{ marginRight: '8px' }} />
+                  Repeat Diet
+                </CancelButton>
+
+              
+                {form.patientType.toLowerCase() === 'ip' && (
+                  <ButtonWithGradient onClick={handleSendToCanteen} className="primary" type="button">
+                    Send to Canteen
+                  </ButtonWithGradient>
+                )}
+                
+              </div>
               {sentToCanteen && (
                 <div style={{ color: '#0093b8', fontWeight: 600, marginTop: 10 }}>Food intake list sent to canteen!</div>
               )}
@@ -835,6 +965,59 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       onSave={handleSaveFoodIntakeEdit}
       dateList={foodIntakeList.map(item => item.date)}
     />
+    <Modal
+      title="Repeat Selected Items"
+      open={repeatModalVisible}
+      onCancel={() => setRepeatModalVisible(false)}
+      footer={[
+        <CancelButton key="cancel" text="Cancel" onClick={() => setRepeatModalVisible(false)} />,
+        <ButtonWithGradient key="repeat" className="primary" onClick={handleRepeatConfirm} type="button">
+          <FaRedo style={{ marginRight: '8px' }} />
+          Repeat Selected
+        </ButtonWithGradient>
+      ]}
+      width={700}
+    >
+      <div style={{ marginBottom: '16px' }}>
+        <div style={{ marginBottom: '16px', fontWeight: 500, fontSize: '14px' }}>
+          Selected Items: {Object.values(selectedItems).filter(Boolean).length}
+        </div>
+        
+        <div style={{ maxHeight: '400px', overflowY: 'auto', border: '1px solid #e8e8e8', borderRadius: '4px' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+            <thead>
+              <tr style={{ backgroundColor: '#f5f5f5' }}>
+                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e8e8e8' }}>Item</th>
+                <th style={{ padding: '12px', textAlign: 'left', borderBottom: '1px solid #e8e8e8', width: '200px' }}>Date</th>
+              </tr>
+            </thead>
+            <tbody>
+              {foodIntakeList
+                .filter(item => selectedItems[item.id])
+                .map((item) => (
+                  <tr key={item.id} style={{ borderBottom: '1px solid #f0f0f0' }}>
+                    <td style={{ padding: '12px' }}>
+                      <div style={{ fontWeight: 500 }}>{item.fooditem}</div>
+                      <div style={{ fontSize: '12px', color: '#666' }}>
+                        {item.category} • {item.time} {item.ampm} • {item.intake_amount} {item.unit}
+                      </div>
+                    </td>
+                    <td style={{ padding: '12px' }}>
+                      <FormDateInput
+                        name={`date-${item.id}`}
+                        value={itemDates[item.id] || ''}
+                        onChange={e => handleItemDateChange(item.id, e.target.value)}
+                        style={{ width: '100%' }}
+                        min={today}
+                      />
+                    </td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </Modal>
     <ToastContainer autoClose={1300} />
     </>
   );
