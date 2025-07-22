@@ -76,6 +76,7 @@ export interface DietRequest {
   approval: string;
   patientType: string;
   date: string;
+  requestedTime?: string;
 }
 
 export interface FoodItem {

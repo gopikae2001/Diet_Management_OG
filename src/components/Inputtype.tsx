@@ -14,17 +14,18 @@ interface FormInputTypeProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
   options: Option[];
+  selectStyle?: React.CSSProperties;
 }
 
-const FormInputType: React.FC<FormInputTypeProps> = ({ label, name, id = name, value, onChange, options }) => {
+const FormInputType: React.FC<FormInputTypeProps> = ({ label, name, id = name, value, onChange, options, selectStyle }) => {
   return (
     <div className="mb-2">
       {label && (
-        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a' , fontSize: '14px' }}>
+        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a' , fontSize: '13px' }}>
           {label}
         </label>
       )}
-      <select id={id} name={name} className="form-select p-2" value={value} onChange={onChange}>
+      <select id={id} name={name} className="form-select p-2" value={value} onChange={onChange} style={selectStyle}>
         <option value="">Select</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>{opt.label}</option>

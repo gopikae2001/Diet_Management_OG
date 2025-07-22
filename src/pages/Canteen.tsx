@@ -15,6 +15,8 @@ import StatusBadge from '../components/StatusBadge';
 import FormDateInput from "../components/Date";
 import FormInputs from "../components/Input";
 import Searchbar from "../components/Searchbar";
+import { useFood } from '../context/FoodContext';
+import { FaWhatsapp, FaRedo } from 'react-icons/fa';
 
 
 type Status = "pending" | "active" | "paused" | "stopped" | "preparing" | "delivered";
@@ -39,6 +41,7 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
   const [toDate, setToDate] = useState("");
   const [approvalStatus, setApprovalStatus] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
+  const { foodItems } = useFood();
 
 
   // Load orders and packages from API
@@ -226,7 +229,7 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
         <SectionHeading title="Canteen Interface" subtitle="Meal preparation and delivery management" />
 
         <form >
-          <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '20px', width: '60%'}}>
+          <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '20px', width: '60%', marginLeft: '5px'}}>
             <div style={{ flex: 1, minWidth: '220px' }}>
               <FormInputType
                 label="Select Meal type"
@@ -360,7 +363,8 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
               value={toDate}
               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setToDate(e.target.value)}
             />
-            <div style={{ minWidth: '220px', width: '20%' }}>
+            <div style={{ width: 220, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <div style={{ width: 180 }}>
               <FormInputType
                 label="Approval Status"
                 name="approvalStatus"
@@ -376,6 +380,17 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
                   { value: 'stopped', label: 'Stopped' },
                 ]}
               />
+              </div>
+              <FaRedo
+                style={{ cursor: 'pointer', color: '#0093b8', fontSize: 18, marginLeft: 4, marginTop: '23px' }}
+                title="Reset filters"
+                onClick={() => {
+                  setFromDate('');
+                  setToDate('');
+                  setApprovalStatus('');
+                  setSearchTerm('');
+                }}
+              />
             </div>
           </div>
           <div style={{ minWidth: 220, flex: '0 0 250px' }}>
@@ -387,12 +402,12 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
           </div>
         </div>
 
-        <div className="card">
+        <div className="table-container1">
           {isLoading ? (
             <div className="loading">Loading orders...</div>
           ) : (
             <Table
-              data={filteredOrders
+              data={[...filteredOrders].reverse()
                 .map((order, index) => {
                   const o = order as any;
                   return {
@@ -442,6 +457,17 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
                       status = 'stopped';
                     }
                     return <StatusBadge label={label} status={status} />;
+                  }
+                },
+                {
+                  key: 'amount',
+                  header: 'Amount',
+                  render: (_v, row = {}) => {
+                    if (row.status === 'delivered') {
+                      const food = foodItems.find(f => f.name === row.fooditem);
+                      return food ? `₹${food.price}` : '-';
+                    }
+                    return '';
                   }
                 },
                 {

@@ -51,6 +51,11 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
     const [contactError, setContactError] = useState('');
     const [patientIdError, setPatientIdError] = useState('');
     const [patientNameError, setPatientNameError] = useState('');
+    const [patientTypeError, setPatientTypeError] = useState('');
+    const [emailInput, setEmailInput] = useState('');
+    const [showEmailDropdown, setShowEmailDropdown] = useState(false);
+    const emailDomains = ['gmail.com', 'yahoo.com', 'outlook.com'];
+    const [highlightedIndex, setHighlightedIndex] = useState(-1);
 
     // Add a function to get the next patient ID
     const getNextPatientId = () => {
@@ -219,6 +224,14 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
         }
     };
 
+    const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setEmailInput(value);
+        setShowEmailDropdown(value && !value.includes('@'));
+        setNewRequest(prev => ({ ...prev, email: value }));
+        setHighlightedIndex(-1);
+    };
+
     const handleAddRequest = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -226,6 +239,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
         setContactError('');
         setPatientIdError('');
         setPatientNameError('');
+        setPatientTypeError('');
 
         let hasError = false;
 
@@ -240,6 +254,12 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
             setPatientNameError('Patient Name is required');
             hasError = true;
         }
+        // Validate Patient Type
+        if (!newRequest.patientType.trim()) {
+            setPatientTypeError('Patient Type is required');
+            hasError = true;
+        }
+       
 
         // Validate Contact Number
         if (newRequest.contactNumber.length !== 10) {
@@ -256,6 +276,16 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
         if (hasError) return;
 
         try {
+            // Get current time in 12-hour format with AM/PM
+            const now = new Date();
+            let hours = now.getHours();
+            const minutes = now.getMinutes();
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            hours = hours % 12;
+            hours = hours ? hours : 12; // the hour '0' should be '12'
+            const minutesStr = minutes < 10 ? '0' + minutes : minutes;
+            const requestedTime = `${hours}:${minutesStr} ${ampm}`;
+
             const newReq = {
                 patientId: newRequest.patientId,
                 tokenNo: newRequest.tokenNo,
@@ -277,7 +307,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                 date: new Date().toISOString(),
                 approval: newRequest.approval,
                 allergies: newRequest.allergies,
-
+                requestedTime,
             };
 
             await dietRequestsApi.create(newReq);
@@ -446,6 +476,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                                     value={newRequest.patientName}
                                     onChange={handleInputChange}
                                     placeholder="Enter patient name"
+                                    style={patientNameError ? { border: '1.5px solid red' } : {}}
                                 />
                                 {patientNameError && (
                                     <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
@@ -491,6 +522,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                                     maxLength={10}
                                     pattern="\d{10}"
                                     title="Please enter exactly 10 digits"
+                                    style={contactError ? { border: '1.5px solid red' } : {}}
                                 />
                                 {contactError && (
                                     <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
@@ -503,14 +535,61 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                         {/* Row: Email and Blood Group */}
                         <div className="form-row1">
                             <div className="form-group1">
-                                <FormInputs
-                                    label="Email"
-                                    name="email"
-                                    value={newRequest.email}
-                                    onChange={handleInputChange}
-                                    placeholder="Enter email"
-                                    type="email"
-                                />
+                                <div style={{ position: 'relative' }}>
+                                    <FormInputs
+                                        label="Email"
+                                        name="email"
+                                        value={emailInput}
+                                        onChange={handleEmailChange}
+                                        placeholder="Enter email"
+                                        type="email"
+                                        autoComplete="off"
+                                        onKeyDown={(e) => {
+                                            if (!showEmailDropdown) return;
+                                            if (e.key === 'ArrowDown') {
+                                                setHighlightedIndex(prev => (prev + 1) % emailDomains.length);
+                                                e.preventDefault();
+                                            } else if (e.key === 'ArrowUp') {
+                                                setHighlightedIndex(prev => (prev - 1 + emailDomains.length) % emailDomains.length);
+                                                e.preventDefault();
+                                            } else if (e.key === 'Enter' && highlightedIndex >= 0) {
+                                                const completed = `${emailInput}@${emailDomains[highlightedIndex]}`;
+                                                setEmailInput(completed);
+                                                setShowEmailDropdown(false);
+                                                setNewRequest(prev => ({ ...prev, email: completed }));
+                                                setHighlightedIndex(-1);
+                                                e.preventDefault();
+                                            }
+                                        }}
+                                    />
+                                    {showEmailDropdown && (
+                                        <div style={{
+                                            position: 'absolute', background: '#fff', border: '1px solid #ccc', zIndex: 10, width: '100%'
+                                        }}>
+                                            {emailDomains.map((domain, idx) => (
+                                                <div
+                                                    key={domain}
+                                                    style={{
+                                                        padding: '6px 12px',
+                                                        cursor: 'pointer',
+                                                        background: idx === highlightedIndex ? 'Highlight' : '#fff',
+                                                        color: idx === highlightedIndex ? 'HighlightText' : '#000'
+                                                    }}
+                                                    onMouseEnter={() => setHighlightedIndex(idx)}
+                                                    onMouseDown={() => {
+                                                        const completed = `${emailInput}@${domain}`;
+                                                        setEmailInput(completed);
+                                                        setShowEmailDropdown(false);
+                                                        setNewRequest(prev => ({ ...prev, email: completed }));
+                                                        setHighlightedIndex(-1);
+                                                    }}
+                                                >
+                                                    {emailInput}@{domain}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                             <div className="form-group1">
                                 <FormInputType
@@ -556,7 +635,13 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                                         { label: 'OP', value: 'op' },
                                         { label: 'IP', value: 'ip' },
                                     ]}
+                                    selectStyle={patientTypeError ? { border: '1.5px solid red' } : {}}
                                 />
+                                {patientTypeError && (
+                                    <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                        {patientTypeError}
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -636,6 +721,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
                                      <FormInputs
                                         label="Allergies"
                                         name="allergies"
+                                        placeholder='Enter allergies patient has'
                                         value={newRequest.allergies}
                                         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                                             setNewRequest({ ...newRequest, allergies: e.target.value })
@@ -753,7 +839,7 @@ const DietRequestManagement: React.FC<DietRequestManagementProps> = ({ sidebarCo
               />
               </div>
             </div> */}
-                        <div className="btn-text">
+                        <div className="button-container">
                             <ButtonWithGradient type="submit">Add Diet Request</ButtonWithGradient>
                         </div>
                     </form>

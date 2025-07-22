@@ -19,63 +19,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import '../styles/DietRequestApproval.css'
 import FormDateInput from '../components/Date';
 import FormInputType from '../components/Inputtype';
+import { FaWhatsapp, FaRedo } from 'react-icons/fa';
 
 interface DietRequestApprovalProps {
     sidebarCollapsed?: boolean;
     toggleSidebar?: () => void;
 }
 
-// PatientTypeToggle component
-const PatientTypeToggle = ({ value, onChange }: { value: 'all' | 'ip' | 'op', onChange: (v: 'all' | 'ip' | 'op') => void }) => {
-  // Knob position and color
-  let knobLeft = 0, bg = '#eee';
-  if (value === 'ip') { knobLeft = 24; bg = '#27ae60'; }
-  else if (value === 'op') { knobLeft = 0; bg = '#e74c3c'; }
-  else { knobLeft = 14; bg = '#eee'; }
-
-  return (
-    <div style={{ display: 'flex', alignItems: 'center', marginLeft: 16 }}>
-      {/* <span style={{ marginRight: 6, fontWeight: 500, color: '#444' }}>OP</span> */}
-      {/* <div style={{ */}
-        {/* width: 48, height: 24, borderRadius: 16, background: bg, */}
-        {/* position: 'relative', transition: 'background 0.2s', boxShadow: '0 1px 4px rgba(0,0,0,0.08)' */}
-      {/* }}> */}
-       
-        {/* <span
-          style={{
-            position: 'absolute', left: 2, top: 4, color: '#e74c3c', fontSize: 14, zIndex: 3, width: 20, height: 20, textAlign: 'center', cursor: 'pointer'
-          }}
-          onClick={e => { e.stopPropagation(); onChange('op'); }}
-        >✗</span> */}
-       
-        {/* <span
-          style={{
-            position: 'absolute', right: 2, top: 4, color: '#27ae60', fontSize: 14, zIndex: 3, width: 20, height: 20, textAlign: 'center', cursor: 'pointer'
-          }}
-          onClick={e => { e.stopPropagation(); onChange('ip'); }}
-        >✓</span> */}
-       
-        {/* <span
-          style={{
-            position: 'absolute',
-            left: knobLeft,
-            top: 2,
-            width: 20,
-            height: 20,
-            borderRadius: '50%',
-            background: '#fff',
-            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
-            transition: 'left 0.2s',
-            zIndex: 2,
-            cursor: 'pointer'
-          }}
-          onClick={e => { e.stopPropagation(); onChange('all'); }}
-        /> */}
-      {/* </div> */}
-      {/* <span style={{ marginLeft: 6, fontWeight: 500, color: '#444' }}>IP</span> */}
-    </div>
-  );
-};
+// Remove the PatientTypeToggle component
 
 const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollapsed = false, toggleSidebar }) => {
   const navigate = useNavigate();
@@ -195,17 +146,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
     {
       key: 'requestedTime',
       header: 'Requested Time',
-      render: (_: any, row: any) => {
-        // If row.date is ISO string, extract time part
-        if (row.date) {
-          if (row.date.includes('T')) {
-            return row.date.split('T')[1]?.split('.')[0] || '-';
-          } else if (row.date.includes(' ')) {
-            return row.date.split(' ')[1]?.split('.')[0] || '-';
-          }
-        }
-        return '-';
-      }
+      render: (_: any, row: any) => row.requestedTime || '-'
     },
     { key: 'status', header: 'Status',    
       render: (_: any, row: any) => (
@@ -288,8 +229,8 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
     // Patient type filter
     const patientTypeMatch =
       patientTypeFilter === 'all' ||
-      (patientTypeFilter === 'ip' && item.patientType === 'IP') ||
-      (patientTypeFilter === 'op' && item.patientType === 'OP');
+      (patientTypeFilter === 'ip' && item.patientType === 'ip') ||
+      (patientTypeFilter === 'op' && item.patientType === 'op');
     // Search filter
     const searchMatch = Object.values(item).some(
       val => val && val.toString().toLowerCase().includes(searchTerm.toLowerCase())
@@ -352,19 +293,94 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
             value={toDate}
             onChange={e => setToDate(e.target.value)}
           />
-          <div style={{ minWidth: '220px', width: '20%' }}>
-          <FormInputType
-            label="Approval Status"
-            name="approvalStatus"
-            value={approvalStatus}
-            onChange={e => setApprovalStatus(e.target.value)}
-            options={[
-              { value: '', label: 'All' },
-              { value: 'Pending', label: 'Pending' },
-              { value: 'Diet Order Placed', label: 'Diet Order Placed' },
-              { value: 'Rejected', label: 'Rejected' },
-            ]}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 180 }}>
+              <FormInputType
+                label="Approval Status"
+                name="approvalStatus"
+                value={approvalStatus}
+                onChange={e => setApprovalStatus(e.target.value)}
+                options={[
+                  { value: '', label: 'All' },
+                  { value: 'Pending', label: 'Pending' },
+                  { value: 'Diet Order Placed', label: 'Diet Order Placed' },
+                  { value: 'Rejected', label: 'Rejected' },
+                ]}
+              />
+            </div>
+            <FaRedo
+              style={{
+                cursor: 'pointer',
+                color: '#0093b8',
+                fontSize: 18,
+                marginLeft: 4,
+                marginTop: 20,
+              }}
+              title="Reset filters"
+              onClick={() => {
+                setFromDate('');
+                setToDate('');
+                setApprovalStatus('');
+                setSearchTerm('');
+                setPatientTypeFilter('all');
+              }}
+            />
+            {/* Three-way toggle switch for OP/All/IP */}
+            <div style={{ display: 'flex', alignItems: 'center', marginLeft: '24px', marginTop: '18px', userSelect: 'none' }}>
+              <span
+                style={{ marginRight: 8, color: patientTypeFilter === 'op' ? '#222' : '#888', fontWeight: 600, cursor: 'pointer' }}
+                onClick={() => setPatientTypeFilter('op')}
+              >OP</span>
+              <div
+                style={{
+                  width: 62,
+                  height: 20,
+                  borderRadius: 12,
+                  background: patientTypeFilter === 'ip' ? '#4caf50' : patientTypeFilter === 'op' ? '#e74c3c' : '#eee',
+                  position: 'relative',
+                  transition: 'background 0.2s',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                  marginRight: 8,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  cursor: 'pointer',
+                }}
+              >
+                {/* OP area */}
+                <div
+                  style={{ position: 'absolute', left: 0, top: 0, width: 20, height: 20, zIndex: 2, borderRadius: 12 }}
+                  onClick={() => setPatientTypeFilter('op')}
+                />
+                {/* All area */}
+                <div
+                  style={{ position: 'absolute', left: 21, top: 0, width: 20, height: 20, zIndex: 2, borderRadius: 12 }}
+                  onClick={() => setPatientTypeFilter('all')}
+                />
+                {/* IP area */}
+                <div
+                  style={{ position: 'absolute', left: 42, top: 0, width: 20, height: 20, zIndex: 2, borderRadius: 12 }}
+                  onClick={() => setPatientTypeFilter('ip')}
+                />
+                <div
+                  style={{
+                    position: 'absolute',
+                    left: patientTypeFilter === 'op' ? 2 : patientTypeFilter === 'all' ? 22 : 42,
+                    top: 2,
+                    width: 16,
+                    height: 16,
+                    borderRadius: '50%',
+                    background: '#fff',
+                    boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
+                    transition: 'left 0.2s',
+                  }}
+                />
+              </div>
+              <span
+                style={{ color: patientTypeFilter === 'ip' ? '#222' : '#888', fontWeight: 600, cursor: 'pointer' }}
+                onClick={() => setPatientTypeFilter('ip')}
+              >IP</span>
+            </div>
           </div>
         </div>
         <div style={{ minWidth: 220, flex: '0 0 250px' }}>
@@ -376,7 +392,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
         </div>
       </div>
       <div style={{display:'flex',justifyContent:'flex-start',alignItems:"center" ,marginBottom: '20px' }}>
-        <PatientTypeToggle value={patientTypeFilter} onChange={setPatientTypeFilter} />
+        {/* Toggle is now handled in the filter area above */}
       </div>
       {isLoading ? (
         <div style={{ textAlign: 'center', padding: '20px' }}>
@@ -386,7 +402,7 @@ const DietRequestApproval: React.FC<DietRequestApprovalProps> = ({ sidebarCollap
         <div style={{ marginTop: '20px' }}>
           <Table 
             columns={columns} 
-            data={filteredData.map((item, index) => ({ ...item, serial: index + 1 }))} 
+            data={[...filteredData].reverse().map((item, index) => ({ ...item, serial: index + 1 }))} 
           />
         </div>
       )}

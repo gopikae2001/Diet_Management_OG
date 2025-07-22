@@ -36,7 +36,7 @@ const FormInputs: React.FC<FormInputProps> = ({
   return (
     <div className="mb-2">
       {label && (
-        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a', fontSize: '14px' }}>
+        <label htmlFor={name} className="form-label" style={{ color: '#5a5a5a', fontSize: '13px' }}>
           {label}
         </label>
       )}

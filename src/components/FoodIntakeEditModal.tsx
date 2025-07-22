@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import CustomModal from './Modal';
 import Input from './Input';
 import Inputtype from './Inputtype';
 import CancelButton from './CancelButton';
 import ButtonWithGradient from './button';
+import { foodItemsApi } from '../services/api';
 
 interface FoodIntakeEditModalProps {
   isOpen: boolean;
@@ -23,9 +24,9 @@ const defaultState = {
   fooditem: '',
   intake_amount: '',
   unit: '',
-  carbohydrates: '',
-  proteins: '',
-  fat: '',
+  // carbohydrates: '',
+  // proteins: '',
+  // fat: '',
   calories: '',
   end_date: '',
   comments: '',
@@ -34,10 +35,23 @@ const defaultState = {
 
 const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onRequestClose, initialData, onSave, dateList }) => {
   const [form, setForm] = React.useState({ ...defaultState, ...initialData });
+  const [foodItems, setFoodItems] = useState([]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setForm({ ...defaultState, ...initialData });
   }, [initialData, isOpen]);
+
+  useEffect(() => {
+    const fetchFoodItems = async () => {
+      try {
+        const items = await foodItemsApi.getAll();
+        setFoodItems(items);
+      } catch (err) {
+        setFoodItems([]);
+      }
+    };
+    fetchFoodItems();
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     const { name, value, type } = e.target;
@@ -56,11 +70,13 @@ const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onReq
     onSave(form);
   };
 
+  const today = new Date().toISOString().split('T')[0];
+
   return (
     <CustomModal isOpen={isOpen} onRequestClose={onRequestClose} title="Edit Food Intake">
       <form onSubmit={handleSubmit}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '18px 24px', marginBottom: 18 }}>
-          <Input label="Date" name="date" value={form.date} onChange={handleChange} type="date" />
+          <Input label="Date" name="date" value={form.date} onChange={handleChange} type="date" min={today} />
           <Input label="Day" name="day" value={form.day} onChange={handleChange} readOnly />
           <Inputtype label="Category" name="category" value={form.category} onChange={handleChange} options={[
             { value: '', label: 'Select category' },
@@ -69,7 +85,13 @@ const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onReq
             { value: 'Dinner', label: 'Dinner' },
             { value: 'Snack', label: 'Snack' },
           ]} />
-          <Input label="Food Item" name="fooditem" value={form.fooditem} onChange={handleChange} />
+          <Inputtype
+            label="Food Item"
+            name="fooditem"
+            value={form.fooditem}
+            onChange={handleChange}
+            options={foodItems.map((item: any) => ({ value: item.name, label: item.name }))}
+          />
           <Input label="Time" name="time" value={form.time} onChange={handleChange} type="time" />
           <Inputtype label="AM/PM" name="ampm" value={form.ampm} onChange={handleChange} options={[
             { value: 'AM', label: 'AM' },
@@ -82,11 +104,8 @@ const FoodIntakeEditModal: React.FC<FoodIntakeEditModalProps> = ({ isOpen, onReq
             { value: 'ml', label: 'ml' },
             { value: 'pcs', label: 'pcs' },
           ]} />
-          <Input label="Carbohydrates (g)" name="carbohydrates" value={form.carbohydrates} onChange={handleChange} type="number" />
-          <Input label="Proteins (g)" name="proteins" value={form.proteins} onChange={handleChange} type="number" />
-          <Input label="Fat (g)" name="fat" value={form.fat} onChange={handleChange} type="number" />
           <Input label="Calories (kcal)" name="calories" value={form.calories} onChange={handleChange} type="number" />
-          <Input label="End Date" name="end_date" value={form.end_date} onChange={handleChange} type="date" />
+          <Input label="End Date" name="end_date" value={form.end_date} onChange={handleChange} type="date" min={today} />
           <Input label="Comments" name="comments" value={form.comments} onChange={handleChange} />
           <Inputtype label="Status" name="status" value={form.status} onChange={handleChange} options={[
             { value: '', label: 'Select status' },

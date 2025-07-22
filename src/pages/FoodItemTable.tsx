@@ -101,7 +101,7 @@ const FoodItemTable: React.FC<FoodItemTableProps> = ({ sidebarCollapsed = false,
         <div style={{ marginTop: '20px' }}>
           <Table
             columns={columns}
-            data={filteredData.map((item) => ({
+            data={[...filteredData].reverse().map((item) => ({
               ...item
             }))}
           />

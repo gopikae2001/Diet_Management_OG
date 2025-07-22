@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { toast } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -39,6 +39,8 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
         pricePerUnit: '',
     });
 
+    const [formErrors, setFormErrors] = useState<{ [key: string]: string }>({});
+
     useEffect(() => {
         if (isEditMode && id) {
             const item = getFoodItem(id);
@@ -57,7 +59,7 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
         setFormData(prev => ({ ...prev, pricePerUnit }));
     }, [formData.quantity, formData.price]);
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         if (name === 'foodType') {
             setFoodType(value);
@@ -66,22 +68,44 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
             ...formData,
             [name]: value,
         });
+        setFormErrors(prev => ({ ...prev, [name]: '' })); // Clear error on input change
+    };
+
+    const handleSelectChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const { name, value } = e.target;
+        if (name === 'foodType') {
+            setFoodType(value);
+        }
+        setFormData({
+            ...formData,
+            [name]: value,
+        });
+        setFormErrors(prev => ({ ...prev, [name]: '' }));
     };
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
+        const errors: { [key: string]: string } = {};
+        if (!formData.name) errors.name = 'Food item name is required';
+        if (!formData.foodType) errors.foodType = 'Food type is required';
+        if (!formData.category) errors.category = 'Category is required';
+        if (!formData.unit) errors.unit = 'Unit is required';
+        if (!formData.quantity) errors.quantity = 'Quantity is required';
+        if (!formData.price) errors.price = 'Price is required';
+        setFormErrors(errors);
+        if (Object.keys(errors).length > 0) return;
         
         // Check for required fields
-        const requiredFields = [
-            'name', 'foodType', 'category', 'unit', 'quantity', 'price'
+        // const requiredFields = [
+        //     'name', 'foodType', 'category', 'unit', 'quantity', 'price'
             
-        ];
-        const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
+        // ];
+        // const missingFields = requiredFields.filter(field => !formData[field as keyof typeof formData]);
         
-        if (missingFields.length > 0) {
-            toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
-            return;
-        }
+        // if (missingFields.length > 0) {
+        //     toast.error(`Please fill in all required fields: ${missingFields.join(', ')}`);
+        //     return;
+        // }
         
         // Validate numeric fields
         // const numericFields = ['quantity', 'calories', 'protein', 'carbohydrates', 'fat', 'price'];
@@ -152,37 +176,49 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
               <div className="form-section3">
                 <form  onSubmit={handleSubmit}>
                     <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start',marginBottom:'10px' }}>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, borderRadius: 4 }}>
                             <FormInputs 
-                            label="Food Item Name" 
-                            name="name" 
-                            value={formData.name} 
-                            onChange={handleInputChange} 
-                            placeholder="Enter food item name" 
+                                label="Food Item Name" 
+                                name="name" 
+                                value={formData.name} 
+                                onChange={handleInputChange} 
+                                placeholder="Enter food item name" 
+                                style={formErrors.name ? { border: '1.5px solid red' } : {}}
                             />
+                            {formErrors.name && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.name}
+                                </div>
+                            )}
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, borderRadius: 4 }}>
                             <FormInputType 
-                            label="Food Type" 
-                            name="foodType" 
-                            value={foodType} 
-                            onChange={handleInputChange} 
-                            options={[
-                                { label: "Solid", value: "Solid" },
-                                { label: "Liquid", value: "Liquid" },
-                                { label: "Semi-Solid", value: "Semi-Solid" }
-                            ]}
+                                label="Food Type" 
+                                name="foodType" 
+                                value={foodType} 
+                                onChange={handleSelectChange} 
+                                options={[
+                                    { label: "Solid", value: "Solid" },
+                                    { label: "Liquid", value: "Liquid" },
+                                    { label: "Semi-Solid", value: "Semi-Solid" }
+                                ]}
+                                selectStyle={formErrors.foodType ? { border: '1.5px solid red' } : {}}
                             />
+                            {formErrors.foodType && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.foodType}
+                                </div>
+                            )}
                         </div>
                     </div>
                     {/* Second Row */}
                     <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' ,marginBottom:'10px' }}>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, borderRadius: 4 }}>
                             <FormInputType 
                                 label="Food Category" 
                                 name="category" 
                                 value={formData.category} 
-                                onChange={handleInputChange} 
+                                onChange={handleSelectChange} 
                                 options={[
                                     { label: "Vegetables", value: "Vegetables" },
                                     { label: "Fruits", value: "Fruits" },
@@ -197,17 +233,21 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
                                     {label: "Sweets & Snacks", value: "Sweets & Snacks"},
                                     {label: "Spices & Condiments", value: "Spices & Condiments"},
                                     {label: "Non-veg", value: "Non-veg"},
-                            
-                                    // { label: "Other", value: "Other" }
                                 ]}
+                                selectStyle={formErrors.category ? { border: '1.5px solid red' } : {}}
                             />
+                            {formErrors.category && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.category}
+                                </div>
+                            )}
                         </div>
-                        <div style={{ flex: 1 }}>
+                        <div style={{ flex: 1, borderRadius: 4 }}>
                             <FormInputType 
                                 label="Unit" 
                                 name="unit" 
                                 value={formData.unit} 
-                                onChange={handleInputChange} 
+                                onChange={handleSelectChange} 
                                 options={[
                                     {label:"Litre", value:"Litre"},
                                     {label:"Millilitre", value:"Millilitre"},
@@ -220,41 +260,58 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
                                     {label:"Tablespoon", value:"Tablespoon"},
                                     {label:"Teaspoon", value:"Teaspoon"},
                                     {label:"Glass", value:"Glass"}
-                                   
                                 ]}
+                                selectStyle={formErrors.unit ? { border: '1.5px solid red' } : {}}
                             />
+                            {formErrors.unit && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.unit}
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width:'100%', marginTop:'15px' }}>
-                        <div style={{flex:1}}>
-                        <FormInputs 
-                            label="Quantity" 
-                            name="quantity" 
-                            value={formData.quantity} 
-                            onChange={handleInputChange} 
-                            placeholder="Enter quantity" 
-                        />
-                        </div>
-                         <div style={{ flex: 1 }}>
+                        <div style={{flex:1, borderRadius: 4}}>
                             <FormInputs 
-                            label="Price" 
-                            name="price" 
-                            value={formData.price} 
-                            onChange={handleInputChange} 
-                            placeholder="Enter price" 
+                                label="Quantity" 
+                                name="quantity" 
+                                value={formData.quantity} 
+                                onChange={handleInputChange} 
+                                placeholder="Enter quantity" 
+                                style={formErrors.quantity ? { border: '1.5px solid red' } : {}}
                             />
+                            {formErrors.quantity && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.quantity}
+                                </div>
+                            )}
+                        </div>
+                         <div style={{ flex: 1, borderRadius: 4 }}>
+                            <FormInputs 
+                                label="Price" 
+                                name="price" 
+                                value={formData.price} 
+                                onChange={handleInputChange} 
+                                placeholder="Enter price" 
+                                style={formErrors.price ? { border: '1.5px solid red' } : {}}
+                            />
+                            {formErrors.price && (
+                                <div style={{ color: 'red', fontSize: '12px', marginTop: '4px' }}>
+                                    {formErrors.price}
+                                </div>
+                            )}
                         </div>
                     </div>
 
                     <div className="form-row" style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', width:'100%', marginTop:'15px', width: '50%' }}>
                     <div style={{flex:1}}>
                             <FormInputs
-                            label="Price Per Unit" 
-                            name="pricePerUnit" 
-                            value={formData.pricePerUnit} 
-                            onChange={handleInputChange} 
-                         readOnly
+                                label="Price Per Unit" 
+                                name="pricePerUnit" 
+                                value={formData.pricePerUnit} 
+                                onChange={handleInputChange} 
+                                readOnly
                             />
                         </div>
                     </div>
@@ -286,10 +343,14 @@ const FoodItem: React.FC<FoodItemProps> = ({ sidebarCollapsed = false, toggleSid
                     {/* </div> */}
                  <div style={{marginLeft:'3px', marginTop: '18px'}}>
                     <ButtonWithGradient text={isEditMode ? "Update Food Item" : "Add Food Item"} type="submit" />
+                    
                 </div>
                 </form>
               </div>
+              
             </PageContainer>
+            <ToastContainer autoClose={1300} />
+           
             <Footer />
         </>
     );
