@@ -223,6 +223,22 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
 
             <li>
               <NavLink
+                to="/patientdeliveredorders" style={{fontWeight:400,color:"#cccccc"}}
+                className={({ isActive }) =>
+                  isActive ? "nav-item active" : "nav-item"
+                }
+                title={collapsed ? "Patient Delivered Orders" : ""}
+              >
+                <span>
+                  <FontAwesomeIcon icon={faCaretRight} />
+                </span>
+                {!collapsed && "Patient Delivered Orders"}
+              </NavLink>
+            </li>
+
+
+            <li>
+              <NavLink
                 to="/patientdiethistory" style={{fontWeight:400,color:"#cccccc"}}
                 className={({ isActive }) =>
                   isActive ? "nav-item active" : "nav-item"
@@ -235,7 +251,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 {!collapsed && "Patient Diet History"}
               </NavLink>
             </li>
-
+           
           </ul>
         </ul>
       </nav>

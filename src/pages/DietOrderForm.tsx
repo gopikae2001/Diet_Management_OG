@@ -541,39 +541,56 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
       const selectedEntries = foodIntakeList.filter(item => selectedItems[item.id]);
       const now = new Date();
       const pad = (n: number) => n.toString().padStart(2, '0');
+      const todayStr = new Date().toISOString().split('T')[0];
 
-      // Prepare all new dates (including repeated ones)
+      // Only consider future or today dates for repeat
       const allDates = [
-        ...foodIntakeList.map(item => item.date),
-        ...selectedEntries.map(entry => itemDates[entry.id] || entry.date)
+        ...foodIntakeList.map(item => item.date).filter(date => date && date >= todayStr),
+        ...selectedEntries.map(entry => itemDates[entry.id] || entry.date).filter(date => date && date >= todayStr)
       ];
       const uniqueDates = Array.from(new Set(allDates)).sort();
       const dateToDay = Object.fromEntries(uniqueDates.map((date, idx) => [date, (idx + 1).toString()]));
 
-      // Process entries in parallel for better performance
+      // Prevent duplicates: build a set of existing (date, category, fooditem) for current patient only
+      const existingSet = new Set(
+        foodIntakeList
+          .filter(item => item.patientId === form.patientId)
+          .map(item => `${item.date}|${item.category}|${item.fooditem}`)
+      );
+
+      // Only add new entries if not already present for that date/category/fooditem for this patient
       await Promise.all(selectedEntries.map(async (entry) => {
         const newDate = itemDates[entry.id] || entry.date;
+        if (!newDate || newDate < todayStr) return;
+        const key = `${newDate}|${entry.category}|${entry.fooditem}`;
+        if (existingSet.has(key)) return;
+
         const createdAt = `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())} ${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
         const newDay = dateToDay[newDate] || '';
         const newEntry = {
           ...entry,
           id: Date.now().toString() + Math.random().toString(36).substr(2, 9),
           date: newDate,
-          day: newDay, // Save correct day
+          day: newDay,
           createdAt,
           patientId: form.patientId
         };
+        existingSet.add(key);
         return addFoodIntakeApi.create(newEntry);
       }));
 
-      // Refresh the food intake list to include the newly created entries
+      // Refresh the food intake list to include the newly created entries, but only for the current patient
       const updatedList = await addFoodIntakeApi.getAll();
-      setFoodIntakeList(updatedList);
-      setSelectedItems({}); // Clear selection
-      setItemDates({}); // Clear dates
+      const filteredList = updatedList.filter(item => item.patientId === form.patientId);
+      setFoodIntakeList(filteredList);
+      // Reset selectedItems for only current visible items, all set to false
+      const newSelectedItems = {};
+      filteredList.forEach(item => { newSelectedItems[item.id] = false; });
+      setSelectedItems(newSelectedItems);
+      setSelectAll(false);
+      setItemDates({});
       setRepeatModalVisible(false);
       toast.success('Selected items have been repeated successfully');
-
     } catch (error) {
       console.error('Failed to repeat items:', error);
       toast.error('Failed to repeat items. Please try again.');
@@ -603,6 +620,51 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
     }
   };
 
+  // Add a selectAll state
+  const [selectAll, setSelectAll] = useState(false);
+
+  // Update selectedItems when selectAll changes
+  useEffect(() => {
+    if (selectAll) {
+      const visibleIds = foodIntakeList
+        .filter(item => {
+          if (!search) return true;
+          const searchStr = search.toLowerCase();
+          return Object.values(item).some(val => val && val.toString().toLowerCase().includes(searchStr));
+        })
+        .map(item => item.id);
+      setSelectedItems(prev => {
+        const newSelected = { ...prev };
+        visibleIds.forEach(id => { newSelected[id] = true; });
+        return newSelected;
+      });
+    } else {
+      setSelectedItems(prev => {
+        const newSelected = { ...prev };
+        Object.keys(newSelected).forEach(id => { newSelected[id] = false; });
+        return newSelected;
+      });
+    }
+    // eslint-disable-next-line
+  }, [selectAll, search, foodIntakeList]);
+
+  // Add a deleteSelected handler
+  const handleDeleteSelected = async () => {
+    const idsToDelete = Object.entries(selectedItems)
+      .filter(([id, selected]) => selected)
+      .map(([id]) => id);
+    if (idsToDelete.length === 0) return;
+    if (!window.confirm('Are you sure you want to delete all selected entries?')) return;
+    try {
+      await Promise.all(idsToDelete.map(id => addFoodIntakeApi.delete(id)));
+      setFoodIntakeList(prev => prev.filter(item => !idsToDelete.includes(item.id)));
+      setSelectedItems({});
+      setSelectAll(false);
+      toast.success('Selected entries deleted successfully');
+    } catch (err) {
+      toast.error('Failed to delete selected entries.');
+    }
+  };
 
 
   return (
@@ -1011,6 +1073,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                         return (
                           <Table
                             columns={[
+                            
                               {
                                 key: 'day', header: 'Day', render: (_v, row, idx) => {
                                   // Only show day for the first row of each date
@@ -1030,18 +1093,6 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                               { key: 'comments', header: 'Comments' },
                               { key: 'status', header: 'Status' },
                               {
-                                key: 'select',
-                                header: 'Select',
-                                render: (_v, row = {}) => (
-                                  <input
-                                    type="checkbox"
-                                    checked={!!selectedItems[row.id]}
-                                    onChange={() => toggleItemSelection(row.id)}
-                                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                                  />
-                                )
-                              },
-                              {
                                 key: 'action',
                                 header: 'Action',
                                 render: (_v, row = {}) => (
@@ -1056,6 +1107,38 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                                   <span style={{ color: '#222', fontWeight: 500 }}>
                                     {row.createdAt ? row.createdAt : '-'}
                                   </span>
+                                )
+                              },
+                                {
+                                key: 'select',
+                                header: (
+                                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8 }}>
+                                    <span style={{ fontWeight: 500 }}>Select to Delete All</span>
+                                    <input
+                                      type="checkbox"
+                                      checked={selectAll}
+                                      onChange={e => setSelectAll(e.target.checked)}
+                                      style={{ width: '18px', height: '18px', cursor: 'pointer', margin: '0 4px' }}
+                                      title="Select All"
+                                    />
+                                    <DeleteButton
+                                      onClick={handleDeleteSelected}
+                                      size={18}
+                                      className="danger"
+                                      style={{ marginLeft: 4 }}
+                                      disabled={Object.values(selectedItems).filter(Boolean).length === 0}
+                                    />
+                                  </div>
+                                ),
+                                render: (_v, row = {}) => (
+                                  <div style={{ display: 'flex', justifyContent: 'center' }}>
+                                    <input
+                                      type="checkbox"
+                                      checked={!!selectedItems[row.id]}
+                                      onChange={() => toggleItemSelection(row.id)}
+                                      style={{ width: '18px', height: '18px', cursor: 'pointer' }}
+                                    />
+                                  </div>
                                 )
                               },
                             ]}

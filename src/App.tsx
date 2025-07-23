@@ -17,6 +17,7 @@ import DieticianInterface from './pages/Dietician';
 import CanteenInterface from './pages/Canteen';
 // import FoodItemData from './pages/Fooditemdata';
 import FoodItemTable from './pages/FoodItemTable';
+import PatientDeliveredOrders from './pages/PatientDeliveredOrders';
 
 const App: React.FC = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState<boolean>(false);
@@ -48,6 +49,7 @@ const App: React.FC = () => {
                 <Route path="/dietician" element={<DieticianInterface sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/canteen" element={<CanteenInterface sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/patientdiethistory" element={<PatientDietHistory sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
+                <Route path="/patientdeliveredorders" element={<PatientDeliveredOrders sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               </Routes>
             </div>
           </div>
