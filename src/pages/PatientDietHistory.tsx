@@ -1,141 +1,164 @@
-import React, { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PageContainer from '../components/PageContainer';
 import SectionHeading from '../components/SectionHeading';
-import FormInputs from '../components/Input';
+import Avatar from '../components/Avatar';
 import Table from '../components/Table';
-import '../styles/DietOrder.css';
+import { dietOrdersApi, addFoodIntakeApi } from '../services/api';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonWithGradient from '../components/button';
-import { dietOrdersApi, dietPackagesApi, addFoodIntakeApi } from '../services/api';
-import type { DietOrder } from '../services/api';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import FormInputs from '../components/Input';
+import { FaRedo } from 'react-icons/fa';
 
-interface PatientDietHistoryProps {
-  sidebarCollapsed?: boolean;
-  toggleSidebar?: () => void;
+interface DietOrder {
+  id: string;
+  patientName: string;
+  patientId: string;
+  contactNumber: string;
+  approvalStatus: string;
 }
 
+interface FoodIntake {
+  id: string;
+  patientId: string;
+  day?: string;
+  date?: string;
+  category?: string;
+  fooditem?: string;
+  intake_amount?: string;
+  comments?: string;
+}
 
-const PatientDietHistory: React.FC<PatientDietHistoryProps> = ({ sidebarCollapsed = false, toggleSidebar }) => {
-  const [contactNumber, setContactNumber] = useState('');
-  const [results, setResults] = useState<any[] | null>(null);
-  const [searched, setSearched] = useState(false);
-  const [allOrders, setAllOrders] = useState<DietOrder[]>([]);
-  const [allFoodIntake, setAllFoodIntake] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [packageDetails, setPackageDetails] = useState<Record<string, any>>({});
+const PatientDietHistory = ({ sidebarCollapsed = false, toggleSidebar }: { sidebarCollapsed?: boolean; toggleSidebar?: () => void }) => {
+  const [searchValue, setSearchValue] = useState('');
+  const [searchLoading, setSearchLoading] = useState(false);
+  // No need for searchResults state
+  const [selectedPatient, setSelectedPatient] = useState<DietOrder | null>(null);
+  const [dietHistory, setDietHistory] = useState<Array<{ day: string; date: string; category: string; fooditem: string; intake_amount: string; details: string }>>([]);
+  const [rejected, setRejected] = useState(false);
 
-  // Load all diet orders and food intake from API on component mount
-  useEffect(() => {
-    const loadData = async () => {
-      try {
-        setIsLoading(true);
-        const [orders, foodIntake] = await Promise.all([
-          dietOrdersApi.getAll(),
-          addFoodIntakeApi.getAll()
-        ]);
-        setAllOrders(orders);
-        setAllFoodIntake(foodIntake);
-      } catch (error) {
-        console.error('Failed to load data:', error);
-        toast.error('Failed to load diet history');
-      } finally {
-        setIsLoading(false);
+  // Search handler
+  const handleSearch = async () => {
+    setSearchLoading(true);
+    setRejected(false);
+    setSelectedPatient(null);
+    setDietHistory([]);
+    try {
+      const [orders, foodIntake] = await Promise.all([
+        dietOrdersApi.getAll(),
+        addFoodIntakeApi.getAll()
+      ]);
+      // Find patient by ID or contact number
+      const patient = orders.find(
+        (o: DietOrder) => o.patientId === searchValue.trim() || o.contactNumber === searchValue.trim()
+      );
+      if (!patient) {
+        setSelectedPatient(null);
+        setDietHistory([]);
+        setRejected(false);
+        setSearchLoading(false);
+        return;
       }
-    };
-    loadData();
-  }, []);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.trim();
-    setContactNumber(value);
-    if (value.length >= 6) { // search after 6+ digits
-      // Find all patient orders with this contact number
-      const patientOrders = allOrders.filter(order => order.contactNumber === value);
-      // Map patientId to patient info
-      const patientMap: Record<string, DietOrder> = {};
-      patientOrders.forEach(order => {
-        patientMap[order.patientId] = order;
-      });
-      // Find all food intake entries for these patients
-      const filtered = allFoodIntake.filter(entry => {
-        return patientMap[entry.patientId];
-      }).map(entry => {
-        const patient = patientMap[entry.patientId] || {};
-        return {
-          id: entry.id,
-          day: entry.day || '',
-          date: entry.date || '',
-          patientName: patient.patientName || '',
-          contactNumber: patient.contactNumber || '',
-          age: patient.age || '',
-          fooditem: entry.fooditem || '',
-          time: entry.time || '',
-          intake_amount: entry.intake_amount || '',
-          end_date: entry.end_date || '',
-          calories: entry.calories || '',
-          comments: entry.comments || '',
-        };
-      });
-      setResults(filtered);
-      setSearched(true);
-    } else {
-      setResults(null);
-      setSearched(false);
+      handleSelectPatient(patient, foodIntake);
+    } finally {
+      setSearchLoading(false);
     }
   };
 
-  // No need to fetch package details for food intake history
+  // Select patient and show their diet history
+  const handleSelectPatient = (patient: DietOrder, allFoodIntake: FoodIntake[]) => {
+    setSelectedPatient(patient);
+    setSearchValue(patient.patientId);
+    if (patient.approvalStatus === 'rejected') {
+      setRejected(true);
+      setDietHistory([]);
+      return;
+    }
+    setRejected(false);
+    const history = (allFoodIntake || []).filter(f => f.patientId === patient.patientId).map(entry => ({
+      day: entry.day || '',
+      date: entry.date || '',
+      category: entry.category || '',
+      fooditem: entry.fooditem || '',
+      intake_amount: entry.intake_amount || '',
+      details: entry.comments || '-',
+    }));
+    setDietHistory(history);
+  };
+
+  // If user presses Enter in search
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') handleSearch();
+  };
 
   return (
     <>
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showDate showTime showCalculator />
       <PageContainer>
-        <SectionHeading title="Patient Diet History" subtitle="Search for a patient's previous diet items by contact number" />
-        <div className="form-section3">
-          {isLoading ? (
-            <div style={{ textAlign: 'center', padding: '20px' }}>
-              Loading diet history...
-            </div>
-          ) : (
-            <>
-              <div className="form-row" style={{ maxWidth:'30%', display: 'flex', gap: '1rem', alignItems: 'flex-start', marginBottom: '20px' }}>
-                <div style={{ flex: 1 }}>
-                  <FormInputs
-                    label="Enter Contact Number"
-                    name="contactNumber"
-                    value={contactNumber}
-                    onChange={handleInputChange}
-                    placeholder="Enter patient's contact number"
-                  />
-                </div>
-              </div>
-            </>
-          )}
-          {/* Show OP and IP patient diet history with requested columns */}
-          {!isLoading && searched && (
-            results && results.length > 0 ? (
-              <Table
-                columns={[
-                  { key: 'day', header: 'Day' },
-                  { key: 'date', header: 'Date' },
-                  { key: 'patientName', header: 'Patient Name' },
-                  { key: 'contactNumber', header: 'Contact Number' },
-                  { key: 'age', header: 'Age' },
-                  { key: 'fooditem', header: 'Food Item' },
-                  { key: 'time', header: 'Time' },
-                  { key: 'intake_amount', header: 'Intake Amount' },
-                  { key: 'end_date', header: 'End Date' },
-                  { key: 'calories', header: 'Calories' },
-                  { key: 'comments', header: 'Comments' },
-                ]}
-                data={results}
+        <SectionHeading title="Patient Diet History" subtitle="View a patient's previous diet plan by Patient ID or Contact Number" />
+        <div style={{ background: '#fff', borderRadius: 6, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', padding: 32, marginLeft: 'auto', marginRight: 'auto', border: '1px solid #ddd' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+            <FormInputs
+              label="Search Patient"
+              name="patientSearch"
+              placeholder="Enter Patient ID or Contact Number"
+              value={searchValue}
+              onChange={e => setSearchValue(e.target.value)}
+              onKeyDown={handleKeyDown}
+              style={{ minWidth: 290 }}
+            />
+            <div style={{ display: 'flex', alignItems: 'center' }}>
+              <ButtonWithGradient
+                onClick={handleSearch}
+                disabled={searchLoading || !searchValue.trim()}
+              >
+                {searchLoading ? 'Searching...' : 'Search'}
+              </ButtonWithGradient>
+              <FaRedo
+                style={{ cursor: 'pointer', color: '#0093b8', fontSize: 18, marginLeft: 6 }}
+                title="Reset"
+                onClick={() => {
+                  setSearchValue('');
+                  setSelectedPatient(null);
+                  setDietHistory([]);
+                  setRejected(false);
+                }}
               />
-            ) : (
-              <div style={{ marginTop: 20, color: '#888' }}>No previous diet items found.</div>
-            )
+            </div>
+          </div>
+          {/* No patient selection list needed */}
+          {!searchLoading && searchValue && !selectedPatient && !rejected && dietHistory.length === 0 && (
+            <div style={{ marginTop: 20, color: '#888' }}>No patient found.</div>
+          )}
+          {selectedPatient && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 32, marginBottom: 24 }}>
+              <Avatar name={selectedPatient.patientName} size={70} />
+              <div style={{ fontSize: 18, fontWeight: 600, color: '#0093b8' }}>{selectedPatient.patientName}</div>
+              <div style={{ color: '#888', fontSize: 15 }}>ID: {selectedPatient.patientId}</div>
+              <div style={{ color: '#888', fontSize: 15 }}>Contact: {selectedPatient.contactNumber}</div>
+              <div style={{ color: '#888', fontSize: 15 }}>Status: {selectedPatient.approvalStatus === 'approved' ? 'Approved' : selectedPatient.approvalStatus === 'rejected' ? 'Rejected' : selectedPatient.approvalStatus}</div>
+            </div>
+          )}
+          {rejected && (
+            <div style={{ marginTop: 20, color: 'red', fontWeight: 600 }}>
+              Diet plan is rejected for this patient.
+            </div>
+          )}
+          {selectedPatient && !rejected && dietHistory.length > 0 && (
+            <Table
+              columns={[
+                { key: 'day', header: 'Day' },
+                { key: 'date', header: 'Date' },
+                { key: 'category', header: 'Category' },
+                { key: 'fooditem', header: 'Food Item' },
+                { key: 'intake_amount', header: 'Intake Amount' },
+                { key: 'details', header: 'Details' },
+              ]}
+              data={dietHistory}
+            />
+          )}
+          {selectedPatient && !rejected && dietHistory.length === 0 && (
+            <div style={{ marginTop: 20, color: '#888' }}>No previous diet items found.</div>
           )}
         </div>
       </PageContainer>

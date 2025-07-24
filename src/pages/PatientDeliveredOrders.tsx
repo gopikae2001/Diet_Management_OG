@@ -4,7 +4,7 @@ import SectionHeading from '../components/SectionHeading';
 import Avatar from '../components/Avatar';
 import Table from '../components/Table';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faIndianRupeeSign, faSearch } from '@fortawesome/free-solid-svg-icons';
+import { faIndianRupeeSign, faSearch, faRedo } from '@fortawesome/free-solid-svg-icons';
 import { canteenOrdersApi } from '../services/api';
 import { useFood } from '../context/FoodContext';
 import Header from '../components/Header';
@@ -13,6 +13,7 @@ import ButtonWithGradient from '../components/button';
 import FormInputType from '../components/Inputtype';
 import FormInputs from '../components/Input';
 import { addFoodIntakeApi } from '../services/api';
+import { FaRedo } from 'react-icons/fa';
 type FoodIntake = {
   id: string;
   patientId: string;
@@ -130,7 +131,7 @@ const PatientDeliveredOrders = ({ sidebarCollapsed = false, toggleSidebar }: { s
       <Header sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} showCalculator showDate showTime />
       <PageContainer>
       <SectionHeading title="Patient Delivered Orders" subtitle="View all delivered canteen orders and total amount" />
-        <div style={{  background: '#fff', borderRadius: 12, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', padding: 32,  marginLeft: 'auto', marginRight: 'auto' }}>
+        <div style={{  background: '#fff', borderRadius: 6, boxShadow: '0 2px 12px rgba(0,0,0,0.07)', padding: 32,  marginLeft: 'auto', marginRight: 'auto', border:'1px solid #ddd' }}>
           
           
           {/* Inline patient search UI */}
@@ -144,14 +145,39 @@ const PatientDeliveredOrders = ({ sidebarCollapsed = false, toggleSidebar }: { s
               onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => { if (e.key === 'Enter') handlePatientSearch(); }}
               style={{ minWidth: 290 }}
             />
-            <div style={{ display: 'flex', marginTop: '20px' }}>
-            <ButtonWithGradient
-              onClick={handlePatientSearch}
-              disabled={patientSearchLoading || !patientSearch.trim()}
-            >
-              {patientSearchLoading ? 'Searching...' : 'Search'}
-            </ButtonWithGradient>
-          </div>
+            <div style={{ display: 'flex', marginTop: '20px', alignItems: 'center' }}>
+              <ButtonWithGradient
+                onClick={handlePatientSearch}
+                disabled={patientSearchLoading || !patientSearch.trim()}
+              >
+                {patientSearchLoading ? 'Searching...' : 'Search'}
+              </ButtonWithGradient>
+              <span
+                style={{ marginLeft: 8, cursor: 'pointer', color: '#0093b8', fontSize: 22, display: 'flex', alignItems: 'center' }}
+                title="Refresh"
+                onClick={() => {
+                  setPatientSearch('');
+                  setPatientSearchResults([]);
+                  setSelectedPatient(null);
+                  setPatientDeliveredOrders([]);
+                  setPatientPendingOrders([]);
+                  setFoodIntakeList([]);
+                }}
+              >
+                 <FaRedo
+                style={{ cursor: 'pointer', color: '#0093b8', fontSize: 18, marginLeft: 6 }}
+                title="Reset filters"
+                onClick={() => {
+                  setPatientSearch('');
+                  setPatientSearchResults([]);
+                  setSelectedPatient(null);
+                  setPatientDeliveredOrders([]);
+                  setPatientPendingOrders([]);
+                  setFoodIntakeList([]);
+                }}
+              />
+              </span>
+            </div>
           </div>
 
 

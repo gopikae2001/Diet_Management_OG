@@ -181,20 +181,17 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
   // Filtering logic for table
   const filteredOrders = mealOrders.filter(order => {
     const o = order as any;
-    // Date filter
+    // Map From Date to o.date and To Date to o.end_date
+    const orderStart = o.date ? (o.date.split('T')[0] || o.date.split(' ')[0] || o.date) : '';
+    const orderEnd = o.end_date ? (o.end_date.split('T')[0] || o.end_date.split(' ')[0] || o.end_date) : '';
     let dateMatch = true;
-    if (fromDate) {
-      dateMatch = false;
-      if (o.date) {
-        const itemDate = o.date.split('T')[0] || o.date.split(' ')[0] || o.date;
-        if (itemDate >= fromDate) dateMatch = true;
-      }
-    }
-    if (toDate) {
-      if (o.date) {
-        const itemDate = o.date.split('T')[0] || o.date.split(' ')[0] || o.date;
-        if (itemDate > toDate) dateMatch = false;
-      }
+    if (fromDate && toDate) {
+      // Show only if the order starts exactly on fromDate and ends exactly on toDate
+      dateMatch = orderStart === fromDate && orderEnd === toDate;
+    } else if (fromDate) {
+      dateMatch = orderStart >= fromDate;
+    } else if (toDate) {
+      dateMatch = orderEnd === toDate;
     }
     // Approval status filter
     let approvalMatch = true;
@@ -214,7 +211,7 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
     // Date selection filter (for selectedDate)
     let selectedDateMatch = true;
     if (selectedDate) {
-      selectedDateMatch = o.date === selectedDate;
+      selectedDateMatch = orderStart === selectedDate;
     }
     return dateMatch && approvalMatch && searchMatch && mealMatch && selectedDateMatch;
   });
@@ -373,11 +370,11 @@ const CanteenInterface: React.FC<CanteenInterfaceProps> = ({ sidebarCollapsed, t
                 options={[
                   { value: '', label: 'All' },
                   { value: 'pending', label: 'Pending' },
-                  { value: 'active', label: 'Active' },
+                  // { value: 'active', label: 'Active' },
                   { value: 'preparing', label: 'Preparing' },
                   { value: 'delivered', label: 'Delivered' },
-                  { value: 'paused', label: 'Paused' },
-                  { value: 'stopped', label: 'Stopped' },
+                  // { value: 'paused', label: 'Paused' },
+                  // { value: 'stopped', label: 'Stopped' },
                 ]}
               />
               </div>

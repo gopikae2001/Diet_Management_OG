@@ -611,6 +611,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
           ...entry,
           patientName: form.patientName,
           contactNumber: form.contactNumber,
+          // status: 'pending', // <-- add this line
         });
       }
       toast.success('Food intake list sent to canteen!');
@@ -847,7 +848,7 @@ const DietOrderForm: React.FC<DietOrderFormProps> = ({ sidebarCollapsed, toggleS
                 <form onSubmit={handleAddFoodIntake}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr 1fr ', gap: '18px 24px', marginBottom: 20, padding: '10px' }}>
                     {/* <Input label="Day" name="day" value={foodIntake.day} onChange={handleFoodIntakeChange} /> */}
-                    <Input label="Date" name="date" value={foodIntake.date} onChange={handleFoodIntakeChange} type="date" placeholder={dateInputPlaceholder} min={today} />
+                    <Input label="  Date" name="date" value={foodIntake.date} onChange={handleFoodIntakeChange} type="date" placeholder={dateInputPlaceholder} min={today} />
                     <Input label="Day" name="day" value={foodIntake.day} onChange={handleFoodIntakeChange} readOnly />
                     <Inputtype label="Category" name="category" value={foodIntake.category} onChange={handleFoodIntakeChange} options={[
                       { value: '', label: 'Select category' },

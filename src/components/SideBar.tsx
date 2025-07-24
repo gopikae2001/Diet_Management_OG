@@ -237,7 +237,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
             </li>
 
 
-            <li>
+            {/* <li>
               <NavLink
                 to="/patientdiethistory" style={{fontWeight:400,color:"#cccccc"}}
                 className={({ isActive }) =>
@@ -250,7 +250,7 @@ const SideBar: React.FC<SideBarProps> = ({ collapsed = false }) => {
                 </span>
                 {!collapsed && "Patient Diet History"}
               </NavLink>
-            </li>
+            </li> */}
            
           </ul>
         </ul>
