@@ -1,0 +1,685 @@
+openapi: 3.0.0
+info:
+  title: Diet Management API
+  version: 1.0.0
+  description: API documentation for the Diet Management System
+servers:
+  - url: http://192.168.50.90:3001
+paths:
+  /dietOrders:
+    get:
+      summary: Get all diet orders
+      responses:
+        '200':
+          description: List of diet orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DietOrder'
+    post:
+      summary: Create a new diet order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietOrder'
+      responses:
+        '201':
+          description: Diet order created
+  /dietOrders/{id}:
+    get:
+      summary: Get a diet order by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Diet order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietOrder'
+    patch:
+      summary: Update a diet order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietOrder'
+      responses:
+        '200':
+          description: Diet order updated
+    delete:
+      summary: Delete a diet order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Diet order deleted
+ 
+  /dietRequests:
+    get:
+      summary: Get all diet requests
+      responses:
+        '200':
+          description: List of diet requests
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DietRequest'
+    post:
+      summary: Create a new diet request
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietRequest'
+      responses:
+        '201':
+          description: Diet request created
+  /dietRequests/{id}:
+    get:
+      summary: Get a diet request by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Diet request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietRequest'
+    patch:
+      summary: Update a diet request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietRequest'
+      responses:
+        '200':
+          description: Diet request updated
+    delete:
+      summary: Delete a diet request
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Diet request deleted
+  /foodItems:
+    get:
+      summary: Get all food items
+      responses:
+        '200':
+          description: List of food items
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/FoodItem'
+    post:
+      summary: Create a new food item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodItem'
+      responses:
+        '201':
+          description: Food item created
+  /foodItems/{id}:
+    get:
+      summary: Get a food item by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food item
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FoodItem'
+    patch:
+      summary: Update a food item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FoodItem'
+      responses:
+        '200':
+          description: Food item updated
+    delete:
+      summary: Delete a food item
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Food item deleted
+  /canteenOrders:
+    get:
+      summary: Get all canteen orders
+      responses:
+        '200':
+          description: List of canteen orders
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CanteenOrder'
+    post:
+      summary: Create a new canteen order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CanteenOrder'
+      responses:
+        '201':
+          description: Canteen order created
+  /canteenOrders/{id}:
+    get:
+      summary: Get a canteen order by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Canteen order
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CanteenOrder'
+    patch:
+      summary: Update a canteen order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CanteenOrder'
+      responses:
+        '200':
+          description: Canteen order updated
+    delete:
+      summary: Delete a canteen order
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Canteen order deleted
+  /AddFoodIntake:
+    get:
+      summary: Get all food intake entries
+      responses:
+        '200':
+          description: List of food intake entries
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddFoodIntake'
+    post:
+      summary: Create a new food intake entry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFoodIntake'
+      responses:
+        '201':
+          description: Food intake entry created
+  /AddFoodIntake/{id}:
+    get:
+      summary: Get a food intake entry by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Food intake entry
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AddFoodIntake'
+    patch:
+      summary: Update a food intake entry
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddFoodIntake'
+      responses:
+        '200':
+          description: Food intake entry updated
+    delete:
+      summary: Delete a food intake entry
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Food intake entry deleted
+  /Diet%20Request%20approval:
+    get:
+      summary: Get all diet request approvals
+      responses:
+        '200':
+          description: List of diet request approvals
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/DietRequestApproval'
+    post:
+      summary: Create a new diet request approval
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietRequestApproval'
+      responses:
+        '201':
+          description: Diet request approval created
+  /Diet%20Request%20approval/{id}:
+    get:
+      summary: Get a diet request approval by ID
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Diet request approval
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DietRequestApproval'
+    patch:
+      summary: Update a diet request approval
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DietRequestApproval'
+      responses:
+        '200':
+          description: Diet request approval updated
+    delete:
+      summary: Delete a diet request approval
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Diet request approval deleted
+components:
+  schemas:
+    DietOrder:
+      type: object
+      properties:
+        id:
+          type: string
+        patientName:
+          type: string
+        patientId:
+          type: string
+        contactNumber:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        bloodGroup:
+          type: string
+        tokenNo:
+          type: string
+        visitId:
+          type: string
+        age:
+          type: string
+        gender:
+          type: string
+        bed:
+          type: string
+        ward:
+          type: string
+        floor:
+          type: string
+        doctor:
+          type: string
+        dietPackage:
+          type: string
+        packageRate:
+          type: string
+        startDate:
+          type: string
+        endDate:
+          type: string
+        doctorNotes:
+          type: string
+        status:
+          type: string
+          enum: [active, paused, stopped]
+        approvalStatus:
+          type: string
+          enum: [pending, approved, rejected]
+        patientType:
+          type: string
+        dieticianInstructions:
+          type: string
+    DietPackage:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        type:
+          type: string
+        breakfast:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealItem'
+        brunch:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealItem'
+        lunch:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealItem'
+        dinner:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealItem'
+        evening:
+          type: array
+          items:
+            $ref: '#/components/schemas/MealItem'
+        totalRate:
+          type: number
+        totalNutrition:
+          type: object
+          properties:
+            calories:
+              type: number
+            protein:
+              type: number
+            carbohydrates:
+              type: number
+            fat:
+              type: number
+    MealItem:
+      type: object
+      properties:
+        foodItemId:
+          type: string
+        foodItemName:
+          type: string
+        quantity:
+          type: number
+        unit:
+          type: string
+        time:
+          type: string
+        period:
+          type: string
+          enum: [AM, PM]
+    DietRequest:
+      type: object
+      properties:
+        id:
+          type: string
+        patientId:
+          type: string
+        patientName:
+          type: string
+        age:
+          type: string
+        gender:
+          type: string
+        contactNumber:
+          type: string
+        email:
+          type: string
+        address:
+          type: string
+        bloodGroup:
+          type: string
+        tokenNo:
+          type: string
+        visitId:
+          type: string
+        bed:
+          type: string
+        ward:
+          type: string
+        floor:
+          type: string
+        doctor:
+          type: string
+        doctorNotes:
+          type: string
+        status:
+          type: string
+          enum: [Pending, Diet Order Placed, Rejected]
+        approval:
+          type: string
+        patientType:
+          type: string
+        date:
+          type: string
+        requestedTime:
+          type: string
+    FoodItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        foodType:
+          type: string
+        category:
+          type: string
+        unit:
+          type: string
+        quantity:
+          type: string
+        calories:
+          type: string
+        protein:
+          type: string
+        carbohydrates:
+          type: string
+        fat:
+          type: string
+        price:
+          type: string
+        pricePerUnit:
+          type: string
+    CanteenOrder:
+      type: object
+      properties:
+        id:
+          type: string
+        patientName:
+          type: string
+        bed:
+          type: string
+        ward:
+          type: string
+        dietPackageName:
+          type: string
+        dietType:
+          type: string
+        foodItems:
+          type: array
+          items:
+            type: string
+        specialNotes:
+          type: string
+        status:
+          type: string
+          enum: [pending, active, paused, stopped, prepared, preparing, delivered]
+        prepared:
+          type: boolean
+        delivered:
+          type: boolean
+        dieticianInstructions:
+          type: string
+        mealItems:
+          type: object
+    AddFoodIntake:
+      type: object
+      properties:
+        id:
+          type: string
+        day:
+          type: string
+        date:
+          type: string
+        time:
+          type: string
+        ampm:
+          type: string
+        category:
+          type: string
+        fooditem:
+          type: string
+        intake_amount:
+          type: string
+        unit:
+          type: string
+        carbohydrates:
+          type: string
+        proteins:
+          type: string
+        fat:
+          type: string
+        calories:
+          type: string
+        end_date:
+          type: string
+        comments:
+          type: string
+        status:
+          type: string
+        patientId:
+          type: string
+        createdAt:
+          type: string
+        updatedAt:
+          type: string
+    DietRequestApproval:
+      type: object
+      properties:
+        id:
+          type: string
+        patientId:
+          type: string
+        approvalAction:
+          type: string
+        approvalTimestamp:
+          type: string
+        approvalStatus:
+          type: string
+        [otherProps]:
+          type: string 

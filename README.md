@@ -71,11 +71,11 @@ diet-management/
 The application uses a JSON server backend with the following endpoints:
 
 - **Diet Orders**: `/dietOrders`
-- **Diet Packages**: `/dietPackages`
+<!-- - **Diet Packages**: `/dietPackages` -->
 - **Food Items**: `/foodItems`
 - **Diet Requests**: `/dietRequests`
 - **Canteen Orders**: `/canteenOrders`
-- **Custom Plans**: `/customPlans`
+
 
 For detailed API documentation, see [API_SETUP.md](./API_SETUP.md).
 

@@ -7,13 +7,13 @@ import TopNavBar from './components/TopNavBar';
 import SideBar from './components/SideBar';
 import Dashboard from './pages/Dashboard';
 import FoodItemForm from './pages/Fooditem';
-import DietPackageForm from './pages/Dietpackage';
-import DietPackageList from './pages/Dietpackagelist';
+// import DietPackageForm from './pages/Dietpackage';
+// import DietPackageList from './pages/Dietpackagelist';
 import DietRequest from './pages/DietRequest';
 import DietRequestApproval from './pages/DietRequestApproval';
 import DietOrderForm from './pages/DietOrderForm';
-import PatientDietHistory from './pages/PatientDietHistory';
-import DieticianInterface from './pages/Dietician';
+// import PatientDietHistory from './pages/PatientDietHistory';
+// import DieticianInterface from './pages/Dietician';
 import CanteenInterface from './pages/Canteen';
 // import FoodItemData from './pages/Fooditemdata';
 import FoodItemTable from './pages/FoodItemTable';
@@ -40,15 +40,15 @@ const App: React.FC = () => {
                 <Route path="/food-item/:id" element={<FoodItemForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 {/* <Route path="/fooditemdata" element={<FoodItemData sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
                 <Route path="/fooditemdata" element={<FoodItemTable sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/dietpackage" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/dietpackagelist" element={<DietPackageList sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/dietpackage/:id" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
+                {/* <Route path="/dietpackage" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
+                {/* <Route path="/dietpackagelist" element={<DietPackageList sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
+                {/* <Route path="/dietpackage/:id" element={<DietPackageForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
                 <Route path="/dietrequest" element={<DietRequest sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/dietrequestapproval" element={<DietRequestApproval sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
                 <Route path="/dietorderform" element={<DietOrderForm sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/dietician" element={<DieticianInterface sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
+                {/* <Route path="/dietician" element={<DieticianInterface sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
                 <Route path="/canteen" element={<CanteenInterface sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
-                <Route path="/patientdiethistory" element={<PatientDietHistory sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} />
+                {/* <Route path="/patientdiethistory" element={<PatientDietHistory sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar}/>} /> */}
                 <Route path="/patientdeliveredorders" element={<PatientDeliveredOrders sidebarCollapsed={sidebarCollapsed} toggleSidebar={toggleSidebar} />} />
               </Routes>
             </div>

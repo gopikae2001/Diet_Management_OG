@@ -19,46 +19,6 @@
       "dieticianInstructions": ""
     },
     {
-      "id": "1752052187233",
-      "patientName": "Sajan",
-      "patientId": "p002",
-      "contactNumber": "1234567890",
-      "age": "18",
-      "bed": "007",
-      "ward": "14",
-      "floor": "",
-      "dietPackage": "1751724027513",
-      "packageRate": "70",
-      "startDate": "2025-07-09",
-      "endDate": "2025-07-31",
-      "doctorNotes": "",
-      "status": "active",
-      "approvalStatus": "approved",
-      "dieticianInstructions": "",
-      "packageName": "General"
-    },
-    {
-      "id": "1752052394569",
-      "patientName": "vasu",
-      "patientId": "p003",
-      "contactNumber": "1234567678",
-      "age": "55",
-      "bed": "",
-      "ward": "",
-      "floor": "",
-      "dietPackage": "1751889270121",
-      "packageRate": "60",
-      "startDate": "2025-07-09",
-      "endDate": "2025-07-26",
-      "doctorNotes": "",
-      "status": "active",
-      "approvalStatus": "approved",
-      "dieticianInstructions": "",
-      "packageName": "fd",
-      "pauseDate": "2025-07-09T09:13:44.432Z",
-      "restartDate": "2025-07-09T09:13:46.624Z"
-    },
-    {
       "id": "1752053507878",
       "patientName": "vasu",
       "patientId": "p004",
@@ -2323,104 +2283,7 @@
       "id": "0f3b"
     }
   ],
-  "dietPackages": [
-    {
-      "id": "1751724027513",
-      "name": "General",
-      "type": "regular",
-      "breakfast": [
-        {
-          "foodItemId": "e0bc",
-          "foodItemName": "Apple ",
-          "quantity": 1,
-          "unit": "Piece",
-          "time": "09:00",
-          "period": "AM"
-        }
-      ],
-      "brunch": [],
-      "lunch": [
-        {
-          "foodItemId": "a41f",
-          "foodItemName": "salad",
-          "quantity": 1,
-          "unit": "Cup",
-          "time": "01:00",
-          "period": "PM"
-        }
-      ],
-      "dinner": [],
-      "evening": [],
-      "totalRate": 70,
-      "totalNutrition": {
-        "calories": 15,
-        "protein": 17,
-        "carbohydrates": 17,
-        "fat": 16
-      }
-    },
-    {
-      "id": "1751889270121",
-      "name": "fd",
-      "type": "regular",
-      "breakfast": [
-        {
-          "foodItemId": "e0bc",
-          "foodItemName": "Apple ",
-          "quantity": 1,
-          "unit": "Piece",
-          "time": "09:00",
-          "period": "AM"
-        }
-      ],
-      "brunch": [],
-      "lunch": [
-        {
-          "foodItemId": "922b",
-          "foodItemName": "RICE",
-          "quantity": 1,
-          "unit": "Plate",
-          "time": "01:01",
-          "period": "AM"
-        }
-      ],
-      "dinner": [],
-      "evening": [],
-      "totalRate": 60,
-      "totalNutrition": {
-        "calories": 14,
-        "protein": 17,
-        "carbohydrates": 15,
-        "fat": 19
-      }
-    },
-    {
-      "id": "1751889558425",
-      "name": "test2",
-      "type": "therapeutic",
-      "breakfast": [
-        {
-          "foodItemId": "a41f",
-          "foodItemName": "salad",
-          "quantity": 1,
-          "unit": "Cup",
-          "time": "14:48",
-          "period": "PM"
-        }
-      ],
-      "brunch": [],
-      "lunch": [],
-      "dinner": [],
-      "evening": [],
-      "totalRate": 50,
-      "totalNutrition": {
-        "calories": 3,
-        "protein": 4,
-        "carbohydrates": 5,
-        "fat": 5
-      }
-    }
-  ],
+  
   "dietRequests": [
     {
       "id": "1753250765653",
@@ -2628,7 +2491,7 @@
       "floor": "",
       "doctor": "",
       "doctorNotes": "",
-      "status": "Pending",
+      "status": "Diet Order Placed",
       "patientType": "ip",
       "email": "",
       "address": "",
@@ -2685,6 +2548,30 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "1:37 PM"
+    },
+    {
+      "id": "1753419286424",
+      "patientId": "P025",
+      "tokenNo": "T023",
+      "visitId": "V023",
+      "patientName": "suytey",
+      "age": "",
+      "gender": "",
+      "contactNumber": "8897852251",
+      "bed": "",
+      "ward": "",
+      "floor": "",
+      "doctor": "",
+      "doctorNotes": "",
+      "status": "Rejected",
+      "patientType": "op",
+      "email": "",
+      "address": "",
+      "bloodGroup": "",
+      "date": "2025-07-25T04:54:46.424Z",
+      "approval": "Pending",
+      "allergies": "",
+      "requestedTime": "10:24 AM"
     }
   ],
   "foodItems": [
@@ -3437,7 +3324,7 @@
       "contactNumber": "8771545448"
     }
   ],
-  "Diet Request approval": [
+  "DietRequestApproval": [
     {
       "id": "1753072751250",
       "patientId": "P006",
@@ -3459,7 +3346,6 @@
       "bloodGroup": "A-",
       "date": "2025-07-21T04:39:00.103Z",
       "approval": "Pending",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-21T04:39:11.249Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3485,7 +3371,6 @@
       "date": "2025-07-22T04:39:56.961Z",
       "approval": "Pending",
       "allergies": "",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-22T04:40:02.560Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3511,7 +3396,6 @@
       "date": "2025-07-22T04:49:25.721Z",
       "approval": "Pending",
       "allergies": "",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-22T04:49:35.967Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3537,7 +3421,6 @@
       "date": "2025-07-21T06:08:08.995Z",
       "approval": "Pending",
       "allergies": "adad",
-      "approvalAction": "rejected",
       "approvalTimestamp": "2025-07-22T04:49:38.320Z",
       "approvalStatus": "Rejected"
     },
@@ -3564,7 +3447,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "12:16 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-22T06:46:52.648Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3591,7 +3473,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "10:23 AM",
-      "approvalAction": "rejected",
       "approvalTimestamp": "2025-07-22T08:27:42.904Z",
       "approvalStatus": "Rejected"
     },
@@ -3618,7 +3499,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "5:23 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-22T11:53:59.139Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3645,7 +3525,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "11:36 AM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-23T06:06:11.717Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3672,7 +3551,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "11:49 AM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-23T06:19:49.228Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3697,7 +3575,6 @@
       "bloodGroup": "A+",
       "date": "2025-07-21T05:38:57.705Z",
       "approval": "Pending",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-23T06:22:50.060Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3724,7 +3601,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "12:13 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-23T06:43:19.000Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3751,7 +3627,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "1:14 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-23T07:44:44.914Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3778,7 +3653,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "9:30 AM",
-      "approvalAction": "rejected",
       "approvalTimestamp": "2025-07-24T04:00:46.928Z",
       "approvalStatus": "Rejected"
     },
@@ -3805,7 +3679,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "9:38 AM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-24T04:08:33.136Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3832,7 +3705,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "9:39 AM",
-      "approvalAction": "rejected",
       "approvalTimestamp": "2025-07-24T04:09:31.415Z",
       "approvalStatus": "Rejected"
     },
@@ -3859,7 +3731,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "1:36 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-24T08:06:38.118Z",
       "approvalStatus": "Diet Order Placed"
     },
@@ -3886,7 +3757,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "1:25 PM",
-      "approvalAction": "rejected",
       "approvalTimestamp": "2025-07-24T08:06:59.926Z",
       "approvalStatus": "Rejected"
     },
@@ -3913,7 +3783,6 @@
       "approval": "Pending",
       "allergies": "",
       "requestedTime": "1:37 PM",
-      "approvalAction": "approved",
       "approvalTimestamp": "2025-07-24T11:40:12.532Z",
       "approvalStatus": "Diet Order Placed"
     }
