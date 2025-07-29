@@ -2283,7 +2283,6 @@
       "id": "0f3b"
     }
   ],
-  
   "dietRequests": [
     {
       "id": "1753250765653",
@@ -4168,6 +4167,15 @@
       "status": "",
       "patientId": "P024",
       "createdAt": "2025-07-24 17:10:26"
+    },
+    {
+      "id": "1",
+      "patientId": "P001",
+      "foodItemId": "527e",
+      "quantity": 2,
+      "time": "09:00",
+      "date": "2025-07-24",
+      "notes": "Breakfast intake."
     }
   ]
 }

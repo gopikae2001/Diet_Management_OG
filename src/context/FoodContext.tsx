@@ -17,6 +17,24 @@ export interface FoodItem {
   pricePerUnit: string;
 }
 
+// Map backend MSSQL fields to frontend fields
+function mapFoodItemFromBackend(item: any): FoodItem {
+  return {
+    id: item.FI_ID_PK?.toString() || item.id?.toString() || '',
+    name: item.FI_name || item.name || '',
+    foodType: item.FI_foodType || item.foodType || '',
+    category: item.FI_category || item.category || '',
+    unit: item.FI_unit?.toString() || item.unit || '',
+    quantity: item.FI_quantity?.toString() || item.quantity || '',
+    calories: item.FI_calories?.toString() || item.calories || '',
+    protein: item.FI_protein?.toString() || item.protein || '',
+    carbohydrates: item.FI_carbohydrates?.toString() || item.carbohydrates || '',
+    fat: item.FI_fat?.toString() || item.fat || '',
+    price: item.FI_price?.toString() || item.price || '',
+    pricePerUnit: item.FI_priceperunit?.toString() || item.pricePerUnit || '',
+  };
+}
+
 interface FoodContextType {
   foodItems: FoodItem[];
   addFoodItem: (item: Omit<FoodItem, 'id'>) => Promise<void>;
@@ -37,7 +55,7 @@ export const FoodProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       const items = await foodItemsApi.getAll();
-      setFoodItems(items);
+      setFoodItems(Array.isArray(items) ? items.map(mapFoodItemFromBackend) : []);
     } catch (error) {
       console.error('Failed to load food items:', error);
     } finally {
@@ -55,7 +73,6 @@ export const FoodProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const quantityNum = Number(item.quantity);
       const priceNum = Number(item.price);
       const pricePerUnit = (!isNaN(quantityNum) && quantityNum > 0 && !isNaN(priceNum)) ? (priceNum / quantityNum).toFixed(2) : '';
-      
       await foodItemsApi.create({ ...item, pricePerUnit });
       await refreshFoodItems();
     } catch (error) {
@@ -69,7 +86,6 @@ export const FoodProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       const quantityNum = Number(updatedItem.quantity);
       const priceNum = Number(updatedItem.price);
       const pricePerUnit = (!isNaN(quantityNum) && quantityNum > 0 && !isNaN(priceNum)) ? (priceNum / quantityNum).toFixed(2) : '';
-      
       await foodItemsApi.update(id, { ...updatedItem, pricePerUnit });
       await refreshFoodItems();
     } catch (error) {

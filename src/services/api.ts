@@ -194,6 +194,19 @@ export const dietRequestsApi = {
     apiCall(`dietRequests/${id}`, { method: 'DELETE' }),
 };
 
+// Map frontend fields to backend MSSQL fields
+function mapFoodItemToBackend(item: any) {
+  return {
+    FI_name: item.name,
+    FI_foodType: item.foodType,
+    FI_category: item.category,
+    FI_unit: item.unit,
+    FI_quantity: item.quantity,
+    FI_price: item.price,
+    FI_priceperunit: item.pricePerUnit,
+    // Add other fields as needed
+  };
+}
 // Food Items API
 export const foodItemsApi = {
   getAll: () => apiCall('foodItems'),
@@ -201,12 +214,12 @@ export const foodItemsApi = {
   create: (item: Omit<FoodItem, 'id'>) =>
     apiCall('foodItems', {
       method: 'POST',
-      body: JSON.stringify(item),
+      body: JSON.stringify(mapFoodItemToBackend(item)),
     }),
   update: (id: string, item: Partial<FoodItem>) =>
     apiCall(`foodItems/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify(item),
+      body: JSON.stringify(mapFoodItemToBackend(item)),
     }),
   delete: (id: string) =>
     apiCall(`foodItems/${id}`, { method: 'DELETE' }),
@@ -268,18 +281,18 @@ export const addFoodIntakeApi = {
 
 // Add Diet Request Approval API
 export const dietRequestApprovalApi = {
-  getAll: () => apiCall('Diet Request approval'),
-  getById: (id: string) => apiCall(`Diet Request approval/${id}`),
+  getAll: () => apiCall('dietRequestApproval'),
+  getById: (id: string) => apiCall(`dietRequestApproval/${id}`),
   create: (entry: any) =>
-    apiCall('Diet Request approval', {
+    apiCall('dietRequestApproval', {
       method: 'POST',
       body: JSON.stringify({ ...entry, id: Date.now().toString() }),
     }),
   update: (id: string, entry: any) =>
-    apiCall(`Diet Request approval/${id}`, {
+    apiCall(`dietRequestApproval/${id}`, {
       method: 'PATCH',
       body: JSON.stringify(entry),
     }),
   delete: (id: string) =>
-    apiCall(`Diet Request approval/${id}`, { method: 'DELETE' }),
+    apiCall(`dietRequestApproval/${id}`, { method: 'DELETE' }),
 }; 
