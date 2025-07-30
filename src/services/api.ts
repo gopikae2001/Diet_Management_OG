@@ -142,17 +142,26 @@ const apiCall = async (endpoint: string, options: RequestInit = {}) => {
 
 // Diet Orders API
 export const dietOrdersApi = {
-  getAll: () => apiCall('dietOrders'),
-  getById: (id: string) => apiCall(`dietOrders/${id}`),
-  create: (order: Omit<DietOrder, 'id'>) => 
+  getAll: async () => {
+    const response = await apiCall('dietOrders');
+    if (Array.isArray(response)) {
+      return response.map(mapDietOrderFromBackend);
+    }
+    return response;
+  },
+  getById: async (id: string) => {
+    const response = await apiCall(`dietOrders/${id}`);
+    return mapDietOrderFromBackend(response);
+  },
+  create: (order: Omit<DietOrder, 'id'>) =>
     apiCall('dietOrders', {
       method: 'POST',
-      body: JSON.stringify({ ...order, id: Date.now().toString() }),
+      body: JSON.stringify(mapDietOrderToBackend(order)),
     }),
   update: (id: string, order: Partial<DietOrder>) =>
     apiCall(`dietOrders/${id}`, {
       method: 'PATCH',
-      body: JSON.stringify(order),
+      body: JSON.stringify(mapDietOrderToBackend(order)),
     }),
   delete: (id: string) =>
     apiCall(`dietOrders/${id}`, { method: 'DELETE' }),
@@ -296,3 +305,64 @@ export const dietRequestApprovalApi = {
   delete: (id: string) =>
     apiCall(`dietRequestApproval/${id}`, { method: 'DELETE' }),
 }; 
+
+// Map frontend DietOrder fields to backend MSSQL fields
+function mapDietOrderToBackend(order: any) {
+  return {
+    DO_patientName: order.patientName,
+    DO_patientId: order.patientId,
+    DO_contactNumber: order.contactNumber,
+    DO_age: order.age,
+    DO_bed: order.bed,
+    DO_ward: order.ward,
+    DO_floor: order.floor,
+    DO_doctor: order.doctor,
+    DO_dietPackage: order.dietPackage,
+    DO_packageRate: parseFloat(order.packageRate) || 0,
+    DO_startDate: order.startDate,
+    DO_endDate: order.endDate,
+    DO_doctorNotes: order.doctorNotes,
+    DO_status: order.status || 'pending',
+    DO_approvalStatus: order.approvalStatus || 'pending',
+    DO_dieticianInstructions: order.dieticianInstructions,
+    DO_gender: order.gender,
+    DO_patientType: order.patientType,
+    DO_email: order.email,
+    DO_address: order.address,
+    DO_bloodGroup: order.bloodGroup,
+    DO_tokenNo: order.tokenNo,
+    DO_visitId: order.visitId,
+    DO_added_by: 'frontend',
+    DO_outlet_fk: 'OUTLET001'
+  };
+}
+
+// Map backend MSSQL fields to frontend DietOrder fields
+function mapDietOrderFromBackend(order: any) {
+  return {
+    id: order.DO_ID_PK?.toString() || order.id?.toString() || '',
+    patientName: order.DO_patientName,
+    patientId: order.DO_patientId,
+    contactNumber: order.DO_contactNumber,
+    age: order.DO_age,
+    bed: order.DO_bed,
+    ward: order.DO_ward,
+    floor: order.DO_floor,
+    doctor: order.DO_doctor,
+    dietPackage: order.DO_dietPackage,
+    packageRate: order.DO_packageRate?.toString() || '0',
+    startDate: order.DO_startDate,
+    endDate: order.DO_endDate,
+    doctorNotes: order.DO_doctorNotes,
+    status: order.DO_status,
+    approvalStatus: order.DO_approvalStatus,
+    dieticianInstructions: order.DO_dieticianInstructions,
+    gender: order.DO_gender,
+    patientType: order.DO_patientType,
+    email: order.DO_email,
+    address: order.DO_address,
+    bloodGroup: order.DO_bloodGroup,
+    tokenNo: order.DO_tokenNo,
+    visitId: order.DO_visitId
+  };
+} 
